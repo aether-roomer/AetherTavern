@@ -1,0 +1,32 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# runtime user data — never committed
+data/
+
+# editor
+.idea
+.idea/
+.vscode
+.vscode/
+*.swp
+.DS_Store
+
+# sandbox-mounted dotfiles (character devices, not real files)
+.bash_profile
+.bashrc
+.gitconfig
+.gitmodules
+.mcp.json
+.profile
+.ripgreprc
+.zprofile
+.zshrc
+.claude/

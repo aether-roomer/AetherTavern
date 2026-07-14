@@ -1,0 +1,20 @@
+{
+  "name": "FixtureLegacy",
+  "description": "Synthetic contact with no UUID — mimics the older export format that pre-dated UUIDs.",
+  "gndr": "female",
+  "pronouns": "she/her",
+  "species": "human",
+  "tags": "fixture,test,legacy",
+  "persona": "Has no source UUID; importer should assign one.",
+  "appearance": "",
+  "greeting": "Hi from the legacy era.",
+  "greetingEmotion": "neutral",
+  "exampleMessages": [],
+  "emotions": {},
+  "avatarUri": "",
+  "relationship": "stranger",
+  "responseLength": "unspecified",
+  "style": "chat",
+  "cjk": false,
+  "brains": []
+}

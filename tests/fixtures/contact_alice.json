@@ -1,0 +1,21 @@
+{
+  "id": "fixture-alice-contact-0001",
+  "name": "FixtureAlice",
+  "description": "Synthetic contact for UI tests.",
+  "gndr": "female",
+  "pronouns": "she/her",
+  "species": "human",
+  "tags": "fixture,test",
+  "persona": "Cheerful and curious. Likes baking.",
+  "appearance": "Short red hair, green eyes.",
+  "greeting": "Hi there!",
+  "greetingEmotion": "happy",
+  "exampleMessages": [],
+  "emotions": {},
+  "avatarUri": "",
+  "relationship": "stranger",
+  "responseLength": "unspecified",
+  "style": "chat",
+  "cjk": false,
+  "brains": []
+}

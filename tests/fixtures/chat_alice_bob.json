@@ -1,0 +1,53 @@
+{
+  "chat": {
+    "id": "fixture-chat-alice-bob-0001",
+    "title": "Coffee with Alice",
+    "tags": "fixture,test",
+    "characterId": "fixture-alice-contact-0001",
+    "userId": "fixture-bob-user-0001",
+    "scenarioId": null,
+    "intimacy": "stranger",
+    "style": "chat",
+    "responseLength": null,
+    "cjk": false,
+    "selectedChildId": {},
+    "messages": [],
+    "createdAt": 0,
+    "updatedAt": 0
+  },
+  "character": {
+    "id": "fixture-alice-contact-0001",
+    "name": "FixtureAlice",
+    "description": "Synthetic contact embedded in a chat composite.",
+    "gndr": "female",
+    "pronouns": "she/her",
+    "species": "human",
+    "tags": "fixture,test",
+    "persona": "Cheerful and curious.",
+    "appearance": "Short red hair, green eyes.",
+    "greeting": "Hi there!",
+    "greetingEmotion": "happy",
+    "exampleMessages": [],
+    "emotions": {},
+    "avatarUri": "",
+    "relationship": "stranger",
+    "responseLength": "unspecified",
+    "style": "chat",
+    "cjk": false,
+    "brains": []
+  },
+  "user": {
+    "id": "fixture-bob-user-0001",
+    "name": "FixtureBob",
+    "description": "Synthetic user persona embedded in a chat composite.",
+    "species": "human",
+    "gender": "male",
+    "pronouns": "he/him",
+    "persona": "Laid-back and witty.",
+    "appearance": "Tall, dark hair.",
+    "tags": "fixture,test",
+    "brains": []
+  },
+  "scenario": null,
+  "bookmarks": []
+}

@@ -1,0 +1,43 @@
+{
+  "id": "fixture-charlie-contact-0001",
+  "name": "FixtureCharlie",
+  "description": "Synthetic contact for contact-scoped scenario tests.",
+  "gndr": "non-binary",
+  "pronouns": "they/them",
+  "species": "human",
+  "tags": "fixture,test",
+  "persona": "Generic personality.",
+  "appearance": "Generic appearance.",
+  "greeting": "Default greeting.",
+  "greetingEmotion": "neutral",
+  "exampleMessages": [],
+  "emotions": {},
+  "avatarUri": "",
+  "relationship": "stranger",
+  "responseLength": "unspecified",
+  "style": "chat",
+  "cjk": false,
+  "brains": [],
+  "presetSpaces": [
+    {
+      "is_default": true,
+      "name": "Scenario A",
+      "greeting": "Scenario A greeting.",
+      "greeting_emotion": "happy",
+      "style": "roleplay",
+      "scene": "Generic scene one.",
+      "environment": null,
+      "background_uri": null,
+      "relationship": "acquaintance",
+      "response_length": "short",
+      "chat_tags": ["alpha", "bravo", "charlie"]
+    },
+    {
+      "is_default": false,
+      "name": "Scenario B",
+      "greeting": "",
+      "scene": "Generic scene two.",
+      "chat_tags": ["delta"]
+    }
+  ]
+}

@@ -1,0 +1,5022 @@
+/* AetherRoom — design tokens + layout. */
+
+@font-face {
+  font-family: 'Inter';
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/static/vendor/inter/Inter-Variable.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  src: url('/static/vendor/inter/Inter-Italic-Variable.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/static/vendor/noto-sans/NotoSans-Variable.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  src: url('/static/vendor/noto-sans/NotoSans-Italic-Variable.woff2') format('woff2');
+}
+
+/* Lora — readable serif used by the Noir and Sepia themes. */
+@font-face {
+  font-family: 'Lora';
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/static/vendor/lora/Lora-Variable-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/static/vendor/lora/Lora-Variable-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+  src: url('/static/vendor/lora/Lora-Italic-Variable-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+  src: url('/static/vendor/lora/Lora-Italic-Variable-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* JetBrains Mono — used by the Terminal theme. */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/static/vendor/jetbrains-mono/JetBrainsMono-Variable-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/static/vendor/jetbrains-mono/JetBrainsMono-Variable-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+  src: url('/static/vendor/jetbrains-mono/JetBrainsMono-Italic-Variable-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+  src: url('/static/vendor/jetbrains-mono/JetBrainsMono-Italic-Variable-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* Space Grotesk — used by the Synthwave theme. */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/static/vendor/space-grotesk/SpaceGrotesk-Variable-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/static/vendor/space-grotesk/SpaceGrotesk-Variable-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  /* UI font: rail, headers, buttons, labels, list rows. */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  /* Content font: chat bubbles, multi-line text inputs (persona, scene, etc.). */
+  --font-content: 'Noto Sans', 'DejaVu Sans', 'Segoe UI', Tahoma, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Consolas, monospace;
+
+  /* dark theme (default) */
+  --bg: #0d0e12;
+  --bg-1: #14161c;
+  --bg-2: #1a1d25;
+  --bg-3: #232732;
+  --surface: #14161c;
+  --surface-hi: #1d2029;
+  --border: #262a35;
+  --border-hi: #353a48;
+
+  --text: #e8ecf3;
+  --text-dim: #b6becc;
+  --text-mute: #828a99;
+  --text-faint: #545a69;
+
+  --accent: #7aa2f7;
+  --accent-hi: #92b7ff;
+  --accent-soft: rgba(122, 162, 247, .14);
+  --accent-soft-hi: rgba(122, 162, 247, .22);
+  --danger: #f7768e;
+  --danger-soft: rgba(247, 118, 142, .14);
+  --warn: #e0af68;
+  --ok: #9ece6a;
+
+  --bubble-contact: #1c1f29;
+  --bubble-user: #2a3148;
+  --bubble-user-text: #e8ecf3;
+  --bubble-user-text-mute: #aaaab7;
+
+  /* Form-control surface — lifted above the typical card background so it
+     never blends in. */
+  --input-bg: #20242f;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, .4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, .55);
+
+  --ui-font-size: 1rem;
+  --content-font-size: 1rem;
+
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-lg: 14px;
+
+  --rail-w: 56px;
+  --list-w: 320px;
+  --header-h: 56px;
+
+  /* Avatar / emotion-sprite column in chat bubble rows, and the gap to the
+     bubble beside it. These drive both the bubble-row grid AND the
+     controls-alignment math on `.msg.contact` (the meta-row controls and the
+     hover overlay anchor to the message's right edge, which must line up with
+     the bubble's right edge once `--bubble-max-width` caps the bubble). Keep
+     them as variables so that alignment tracks the sprite size — including the
+     shrunk sprite on touch (see the `@media (hover: none)` override). */
+  --avatar-col: 110px;
+  --bubble-row-gap: 10px;
+
+  /* Tint applied (mix-blend-mode: multiply) over a scenario's background
+     image to pull the chat pane toward the active theme's palette. */
+  --scenario-tint: #1c2440;
+}
+
+/* Dark also as a scoped block so [data-theme="dark"] used inside a non-dark
+   page (e.g. a theme picker tile) overrides the outer theme. The :root values
+   above remain the unscoped default. */
+[data-theme="dark"] {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-content: 'Noto Sans', 'DejaVu Sans', 'Segoe UI', Tahoma, Helvetica, Arial, sans-serif;
+
+  --bg: #0d0e12;
+  --bg-1: #14161c;
+  --bg-2: #1a1d25;
+  --bg-3: #232732;
+  --surface: #14161c;
+  --surface-hi: #1d2029;
+  --border: #262a35;
+  --border-hi: #353a48;
+
+  --text: #e8ecf3;
+  --text-dim: #b6becc;
+  --text-mute: #828a99;
+  --text-faint: #545a69;
+
+  --accent: #7aa2f7;
+  --accent-hi: #92b7ff;
+  --accent-soft: rgba(122, 162, 247, .14);
+  --accent-soft-hi: rgba(122, 162, 247, .22);
+  --danger: #f7768e;
+  --danger-soft: rgba(247, 118, 142, .14);
+  --warn: #e0af68;
+  --ok: #9ece6a;
+
+  --bubble-contact: #1c1f29;
+  --bubble-user: #2a3148;
+  --bubble-user-text: #e8ecf3;
+  --bubble-user-text-mute: #aaaab7;
+
+  --input-bg: #20242f;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, .4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, .55);
+
+  --scenario-tint: #1c2440;
+}
+
+[data-theme="light"] {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-content: 'Noto Sans', 'DejaVu Sans', 'Segoe UI', Tahoma, Helvetica, Arial, sans-serif;
+
+  --bg: #f5f6f9;
+  --bg-1: #fefeff;
+  --bg-2: #f0f2f7;
+  --bg-3: #e6e9f0;
+  --surface: #ffffff;
+  --surface-hi: #f4f5fa;
+  --border: #dfe2ec;
+  --border-hi: #c8cdd9;
+
+  --text: #1a1d25;
+  --text-dim: #3b4255;
+  --text-mute: #6b7384;
+  --text-faint: #9aa2b3;
+
+  --accent: #4361ee;
+  --accent-hi: #2945dd;
+  --accent-soft: rgba(67, 97, 238, .12);
+  --accent-soft-hi: rgba(67, 97, 238, .20);
+  --danger: #d6336c;
+  --danger-soft: rgba(214, 51, 108, .12);
+  --warn: #c1820e;
+  --ok: #2f9e44;
+
+  --bubble-contact: #ffffff;
+  --bubble-user: #4361ee;
+  --bubble-user-text: #ffffff;
+  --bubble-user-text-mute: #bdc8f9;
+
+  --input-bg: #ffffff;
+
+  --shadow-sm: 0 1px 2px rgba(20, 30, 60, .07);
+  --shadow-md: 0 4px 12px rgba(20, 30, 60, .10);
+  --shadow-lg: 0 12px 32px rgba(20, 30, 60, .15);
+
+  --scenario-tint: #a6b3d4;
+}
+
+/* Noir — black, oxblood, antique gold; serif throughout. */
+[data-theme="noir"] {
+  --font-sans: 'Lora', Georgia, 'Times New Roman', serif;
+  --font-content: 'Lora', Georgia, 'Times New Roman', serif;
+
+  --bg: #0a0807;
+  --bg-1: #100c0a;
+  --bg-2: #1a1411;
+  --bg-3: #221a16;
+  --surface: #100c0a;
+  --surface-hi: #1a1411;
+  --border: #5a4628;
+  --border-hi: #7d6238;
+
+  --text: #e8e0d0;
+  --text-dim: #b8aa92;
+  --text-mute: #9e9079;
+  --text-faint: #524a3c;
+
+  --accent: #c8a35e;
+  --accent-hi: #e0bc73;
+  --accent-soft: rgba(200, 163, 94, .14);
+  --accent-soft-hi: rgba(200, 163, 94, .22);
+  --danger: #a8302d;
+  --danger-soft: rgba(168, 48, 45, .18);
+  --warn: #c8a35e;
+  --ok: #7a8a4f;
+
+  --bubble-contact: #1a1411;
+  --bubble-user: #5a1818;
+  --bubble-user-text: #f0e6d0;
+  --bubble-user-text-mute: #cab2a2;
+
+  --input-bg: #1a1411;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .55);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, .65);
+  --shadow-lg: 0 14px 36px rgba(0, 0, 0, .75);
+
+  --radius: 6px;
+  --radius-sm: 3px;
+  --radius-lg: 10px;
+
+  --scenario-tint: #3a1010;
+}
+
+/* Pastel — rose, cream, lavender accents (light variant). */
+[data-theme="pastel"] {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-content: 'Noto Sans', 'DejaVu Sans', 'Segoe UI', Tahoma, Helvetica, Arial, sans-serif;
+
+  --bg: #fbe1ec;
+  --bg-1: #ffeaf2;
+  --bg-2: #f8d2e2;
+  --bg-3: #f0bcd2;
+  --surface: #ffeaf2;
+  --surface-hi: #fdd8e6;
+  --border: #f0b9d2;
+  --border-hi: #de93b8;
+
+  --text: #4a2336;
+  --text-dim: #7a3f5c;
+  --text-mute: #a86f8b;
+  --text-faint: #d09bb6;
+
+  --accent: #e84a87;
+  --accent-hi: #d33170;
+  --accent-soft: rgba(232, 74, 135, .15);
+  --accent-soft-hi: rgba(232, 74, 135, .26);
+  --danger: #d6395a;
+  --danger-soft: rgba(214, 57, 90, .15);
+  --warn: #c89e3e;
+  --ok: #6fae7a;
+
+  --bubble-contact: #ffeaf2;
+  --bubble-user: #ec5e96;
+  --bubble-user-text: #ffffff;
+  --bubble-user-text-mute: #fbdfea;
+
+  --input-bg: #ffeaf2;
+
+  --shadow-sm: 0 1px 2px rgba(120, 70, 100, .07);
+  --shadow-md: 0 4px 12px rgba(120, 70, 100, .12);
+  --shadow-lg: 0 12px 32px rgba(120, 70, 100, .18);
+
+  --radius: 14px;
+  --radius-sm: 9px;
+  --radius-lg: 20px;
+
+  --scenario-tint: #e89cc0;
+}
+
+/* Forest — moss, bark, parchment cream. */
+[data-theme="forest"] {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-content: 'Noto Sans', 'DejaVu Sans', 'Segoe UI', Tahoma, Helvetica, Arial, sans-serif;
+
+  --bg: #243426;
+  --bg-1: #2c3f2e;
+  --bg-2: #354c38;
+  --bg-3: #415c44;
+  --surface: #2c3f2e;
+  --surface-hi: #38503b;
+  --border: #4a6a4d;
+  --border-hi: #648a68;
+
+  --text: #f0e9c8;
+  --text-dim: #c8c098;
+  --text-mute: #aea884;
+  --text-faint: #5e6a4c;
+
+  --accent: #a8c95e;
+  --accent-hi: #c1e078;
+  --accent-soft: rgba(168, 201, 94, .18);
+  --accent-soft-hi: rgba(168, 201, 94, .30);
+  --danger: #d97a5a;
+  --danger-soft: rgba(217, 122, 90, .16);
+  --warn: #d6a14a;
+  --ok: #a8c95e;
+
+  --bubble-contact: #38503b;
+  --bubble-user: #648f4a;
+  --bubble-user-text: #f4f0d8;
+  --bubble-user-text-mute: #d4dab9;
+
+  --input-bg: #354c38;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .35);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, .45);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, .6);
+
+  --scenario-tint: #506a3a;
+}
+
+/* Terminal — phosphor green, monospace everywhere, sharp corners. */
+[data-theme="terminal"] {
+  --font-sans: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+  --font-content: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+
+  --bg: #050805;
+  --bg-1: #0a100a;
+  --bg-2: #0f180f;
+  --bg-3: #142014;
+  --surface: #0a100a;
+  --surface-hi: #0f180f;
+  --border: #1a3a1a;
+  --border-hi: #2a5a2a;
+
+  --text: #2dd866;
+  --text-dim: #1fa84d;
+  --text-mute: #1a9040;
+  --text-faint: #0c5022;
+
+  --accent: #4dff7a;
+  --accent-hi: #80ff9a;
+  --accent-soft: rgba(77, 255, 122, .12);
+  --accent-soft-hi: rgba(77, 255, 122, .22);
+  --danger: #ff5252;
+  --danger-soft: rgba(255, 82, 82, .14);
+  --warn: #ffaa3b;
+  --ok: #4dff7a;
+
+  --bubble-contact: #0a100a;
+  --bubble-user: #1a3a1a;
+  --bubble-user-text: #80ff9a;
+  --bubble-user-text-mute: #5cba6d;
+
+  --input-bg: #0f180f;
+
+  --shadow-sm: 0 0 0 1px rgba(45, 216, 102, .15);
+  --shadow-md: 0 0 0 1px rgba(45, 216, 102, .2), 0 4px 12px rgba(0, 0, 0, .5);
+  --shadow-lg: 0 0 0 1px rgba(45, 216, 102, .25), 0 12px 32px rgba(0, 0, 0, .7);
+
+  --radius: 2px;
+  --radius-sm: 0px;
+  --radius-lg: 4px;
+
+  --scenario-tint: #103a10;
+}
+
+/* Nebula — deep space navy, electric cyan, plasma blue accents. */
+[data-theme="nebula"] {
+  --font-sans: 'Space Grotesk', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-content: 'Space Grotesk', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --bg: #050a18;
+  --bg-1: #0a1024;
+  --bg-2: #0f1530;
+  --bg-3: #161e3e;
+  --surface: #0a1024;
+  --surface-hi: #0f1530;
+  --border: #20305a;
+  --border-hi: #3a527e;
+
+  --text: #d8e8ff;
+  --text-dim: #9eb4d4;
+  --text-mute: #8aa0c5;
+  --text-faint: #475a7c;
+
+  --accent: #4dd6ff;
+  --accent-hi: #7ee5ff;
+  --accent-soft: rgba(77, 214, 255, .14);
+  --accent-soft-hi: rgba(77, 214, 255, .26);
+  --danger: #ff5572;
+  --danger-soft: rgba(255, 85, 114, .15);
+  --warn: #ffc457;
+  --ok: #57e2a4;
+
+  --bubble-contact: #0f1530;
+  --bubble-user: #1d4880;
+  --bubble-user-text: #e8f4ff;
+  --bubble-user-text-mute: #bbcee3;
+
+  --input-bg: #0d1428;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .55);
+  --shadow-md: 0 4px 16px rgba(20, 60, 140, .40);
+  --shadow-lg: 0 14px 40px rgba(30, 90, 180, .50);
+
+  --radius: 6px;
+  --radius-sm: 3px;
+  --radius-lg: 10px;
+
+  --scenario-tint: #1d3a70;
+}
+
+/* Sepia — warm paper, bookish serif throughout. */
+[data-theme="sepia"] {
+  --font-sans: 'Lora', Georgia, 'Times New Roman', serif;
+  --font-content: 'Lora', Georgia, 'Times New Roman', serif;
+
+  --bg: #f4e8d0;
+  --bg-1: #faf0d8;
+  --bg-2: #ecdcc0;
+  --bg-3: #e0cea8;
+  --surface: #faf0d8;
+  --surface-hi: #f0e2c4;
+  --border: #d6c19a;
+  --border-hi: #b8a07a;
+
+  --text: #4a3318;
+  --text-dim: #6e5234;
+  --text-mute: #94795a;
+  --text-faint: #b89c7c;
+
+  --accent: #a85d2c;
+  --accent-hi: #c47236;
+  --accent-soft: rgba(168, 93, 44, .14);
+  --accent-soft-hi: rgba(168, 93, 44, .22);
+  --danger: #b03a2e;
+  --danger-soft: rgba(176, 58, 46, .14);
+  --warn: #b88a30;
+  --ok: #6f8a3a;
+
+  --bubble-contact: #faf0d8;
+  --bubble-user: #d6b27a;
+  --bubble-user-text: #2e1f10;
+  --bubble-user-text-mute: #695235;
+
+  --input-bg: #faf0d8;
+
+  --shadow-sm: 0 1px 2px rgba(80, 50, 20, .08);
+  --shadow-md: 0 4px 12px rgba(80, 50, 20, .14);
+  --shadow-lg: 0 12px 32px rgba(80, 50, 20, .22);
+
+  --scenario-tint: #c89657;
+}
+
+/* Solarized — Ethan Schoonover's classic dark palette, with primary text
+   pushed up to base2/base3 so it actually reads against base03. */
+[data-theme="solarized"] {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-content: 'Noto Sans', 'DejaVu Sans', 'Segoe UI', Tahoma, Helvetica, Arial, sans-serif;
+
+  --bg: #002b36;
+  --bg-1: #073642;
+  --bg-2: #0a4250;
+  --bg-3: #105563;
+  --surface: #073642;
+  --surface-hi: #0a4250;
+  --border: #2c5d6e;
+  --border-hi: #4f7f90;
+
+  --text: #fdf6e3;
+  --text-dim: #c9c0a8;
+  --text-mute: #b3bab4;
+  --text-faint: #657b83;
+
+  --accent: #268bd2;
+  --accent-hi: #4ba2e0;
+  --accent-soft: rgba(38, 139, 210, .14);
+  --accent-soft-hi: rgba(38, 139, 210, .22);
+  --danger: #dc322f;
+  --danger-soft: rgba(220, 50, 47, .14);
+  --warn: #b58900;
+  --ok: #859900;
+
+  --bubble-contact: #073642;
+  --bubble-user: #2c5e7c;
+  --bubble-user-text: #fdf6e3;
+  --bubble-user-text-mute: #cfd4cc;
+
+  --input-bg: #0a4250;
+
+  --shadow-sm: 0 1px 2px rgba(0, 20, 30, .35);
+  --shadow-md: 0 4px 12px rgba(0, 20, 30, .45);
+  --shadow-lg: 0 12px 32px rgba(0, 20, 30, .6);
+
+  --scenario-tint: #1f5d6e;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  font-size: var(--ui-font-size, 14px);
+}
+html, body {
+  margin: 0; padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button { font-family: inherit; font-size: inherit; cursor: pointer; }
+
+
+/* ============== Form controls (shared base) ============== */
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="url"],
+input[type="email"],
+input[type="search"],
+input[type="tel"],
+select,
+textarea {
+  background: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+  transition: border-color .14s ease, box-shadow .14s ease, background-color .14s ease;
+}
+input[type="text"]:hover,
+input[type="number"]:hover,
+input[type="password"]:hover,
+input[type="url"]:hover,
+input[type="email"]:hover,
+input[type="search"]:hover,
+input[type="tel"]:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--border-hi);
+}
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+input[type="url"]:focus,
+input[type="email"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+input::placeholder, textarea::placeholder { color: var(--text-faint); }
+
+
+/* ============== Custom select dropdowns ============== */
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-mute) 50%),
+    linear-gradient(135deg, var(--text-mute) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) calc(50% - 2px),
+    calc(100% - 9px) calc(50% - 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 30px;
+  cursor: pointer;
+}
+select:hover {
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text) 50%),
+    linear-gradient(135deg, var(--text) 50%, transparent 50%);
+}
+
+
+/* ============== Custom checkboxes ============== */
+
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--border-hi);
+  border-radius: 4px;
+  background: var(--input-bg);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background-color .14s ease, border-color .14s ease, transform .08s ease;
+}
+input[type="checkbox"]:hover { border-color: var(--accent); }
+input[type="checkbox"]:active { transform: scale(0.94); }
+input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 9px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(45deg);
+}
+input[type="checkbox"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* ============== App shell ============== */
+
+#app {
+  display: grid;
+  grid-template-columns: var(--rail-w) 1fr;
+  height: 100dvh;
+}
+
+.rail {
+  background: linear-gradient(180deg, var(--bg-1), var(--bg));
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  gap: 4px;
+}
+
+.rail-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--text-mute);
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  transition: background .15s, color .15s;
+}
+.rail-btn[hidden] { display: none; }
+.rail-btn:hover { background: var(--bg-2); color: var(--text); }
+.rail-btn.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.rail-spacer { flex: 1; }
+
+.main {
+  display: grid;
+  grid-template-columns: var(--list-w) 1fr;
+  min-width: 0;
+  min-height: 0;
+}
+.main.full { grid-template-columns: 1fr; }
+
+/* The chats tab wraps .list-pane in an extra div so the list slot is
+ * separately re-renderable from the detail slot. ``display: contents``
+ * makes that wrapper transparent in grid layout — the inner .list-pane
+ * becomes the effective grid item of .main. Without it, the wrapper sits
+ * in the grid with min-height: auto and a long chat list grows the row
+ * past the viewport, pushing the chat-view's header/messages above the
+ * visible area. Must be a class (not inline style) so the mobile
+ * ``body.mobile-detail-open .main:not(.full) > :not(.content-pane):not(#chat-content-pane) { display: none }``
+ * rule can override it on phones — inline display wins over class rules
+ * by specificity, which leaves the list stacked above the chat pane. */
+.chat-list-slot { display: contents; }
+
+/* Sidebar collapse: hide the list pane and let the content pane fill the
+ * full content area. Only kicks in for tabs that have a list pane (the
+ * settings tab is already ``main.full`` so it's a no-op there). Click any
+ * rail tab to bring the sidebar back. The list pane is always the first
+ * child of ``.main`` (renderXTab puts it there before the content pane). */
+body.sidebar-collapsed .main:not(.full) {
+  grid-template-columns: 1fr;
+}
+body.sidebar-collapsed .main:not(.full) > :first-child {
+  display: none;
+}
+.rail-btn#sidebar-toggle.active { color: var(--accent); }
+
+/* ============== List pane ============== */
+
+.list-pane {
+  border-right: 1px solid var(--border);
+  background: var(--bg-1);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+.list-header {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.list-header h2 {
+  margin: 0;
+  font-size: 1.071rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+.list-header .list-actions {
+  display: flex;
+  gap: 6px;
+}
+.list-search { width: 100%; flex: 1; min-width: 0; }
+.list-sort-group {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.list-sort-mode-wrap { position: relative; }
+.list-sort-mode {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-mute);
+  padding: 3px 4px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.list-sort-mode:hover { background: var(--bg-2); color: var(--text); }
+.list-sort-menu {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .25);
+  min-width: 100px;
+  padding: 2px;
+}
+.list-sort-menu.hidden { display: none; }
+.list-sort-menu-item {
+  background: transparent;
+  border: 0;
+  text-align: left;
+  padding: 5px 10px;
+  font-size: 0.786rem;
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.list-sort-menu-item:hover { background: var(--bg-2); }
+.list-sort-menu-item.active {
+  background: var(--accent);
+  color: var(--accent-fg, #fff);
+}
+.list-sort-dir,
+.list-sort-fav {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-mute);
+  padding: 3px 4px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.list-sort-dir:hover,
+.list-sort-fav:hover {
+  background: var(--bg-2);
+  color: var(--text);
+}
+.list-sort-fav.active {
+  color: var(--accent);
+}
+
+.favorite-star {
+  background: transparent;
+  border: 0;
+  margin-left: 8px;
+  padding: 0;
+  flex-shrink: 0;
+  cursor: pointer;
+  color: var(--text-faint);
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  opacity: 0;
+}
+/* Hover-gated reveal — only on real hover devices. The mobile/touch fallback
+ * (always-visible favorite star) lives in the input-mode block at the bottom
+ * of this file. */
+@media (hover: hover) {
+  .list-row:hover .favorite-star { opacity: 0.55; }
+  .favorite-star:hover { color: var(--accent); opacity: 1; }
+}
+.favorite-star.active { color: var(--accent); opacity: 1; }
+
+.list-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.857rem;
+  color: var(--text-dim);
+}
+.chip button {
+  border: none;
+  background: transparent;
+  color: var(--text-mute);
+  font-size: 1rem;
+  padding: 0;
+  margin-right: -4px;
+  line-height: 1;
+}
+.chip button:hover { color: var(--text); }
+
+.list-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.list-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background .12s;
+  user-select: none;
+}
+.list-row:hover { background: var(--bg-2); }
+.list-row.active { background: var(--accent-soft); }
+.list-row.active:hover { background: var(--accent-soft-hi); }
+.avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--bg-3);
+  display: grid;
+  place-items: center;
+  color: var(--text-mute);
+  font-weight: 600;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Cropped image wrapper: marker class applied to a container that already
+ * has fixed dimensions (or aspect-ratio) + overflow:hidden. The inner <img>
+ * is scaled and shifted so the normalised rect [x..x+w, y..y+h] fills the
+ * wrapper. CSS vars on the wrapper drive the math. The base img rules below
+ * apply uncropped too — wrappers sharing the ``image-frame`` class get a
+ * sensible default sizing without needing a crop set. */
+.image-frame { position: relative; overflow: hidden; }
+.image-frame > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cropped { position: relative; overflow: hidden; }
+.cropped > img {
+  position: absolute;
+  display: block;
+  width: calc(100% / var(--crop-w, 1));
+  height: calc(100% / var(--crop-h, 1));
+  left: calc(var(--crop-x, 0) * -100% / var(--crop-w, 1));
+  top: calc(var(--crop-y, 0) * -100% / var(--crop-h, 1));
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+}
+.list-row .row-text { flex: 1; min-width: 0; overflow: hidden; }
+.list-row .row-title {
+  font-weight: 500;
+  font-size: 1rem;
+  display: flex;
+  align-items: baseline;
+}
+.list-row .row-title-text {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.list-row .row-sub {
+  font-size: 0.857rem;
+  color: var(--text-mute);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  max-width: 100%;
+}
+.list-row .row-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-size: 0.786rem;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.list-row .row-msg-count {
+  background: var(--bg-3);
+  color: var(--text-mute);
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 0.714rem;
+  line-height: 1.4;
+}
+.list-row.active .row-msg-count {
+  background: var(--bg-2);
+}
+/* Inline name+badge group for list rows. The group itself owns the
+ * flex:1 normally claimed by ``.row-title-text`` so the favorite star
+ * still floats to the far right; inside, the name can ellipsis-truncate
+ * and the badge stays a fixed-size chip pinned to the end of the name. */
+.list-row .row-title .row-title-name-group {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  overflow: hidden;
+}
+.list-row .row-title .row-title-name-group .row-title-text {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.list-row .row-title .row-inline-badge {
+  flex: 0 0 auto;
+}
+
+.list-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--text-mute);
+  font-size: 0.929rem;
+}
+
+/* ============== Buttons ============== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.929rem;
+  font-weight: 500;
+  transition: background .12s, border-color .12s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--bg-3); border-color: var(--border-hi); }
+.btn.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn.primary:hover { background: var(--accent-hi); border-color: var(--accent-hi); }
+.btn.danger { color: var(--danger); border-color: var(--danger-soft); }
+.btn.danger:hover { background: var(--danger-soft); }
+.btn.ghost { background: transparent; border-color: transparent; }
+.btn.ghost:hover { background: var(--bg-3); }
+.btn.ghost.danger:hover { background: var(--danger-soft); color: var(--danger); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn .icon { display: inline-flex; }
+
+.icon-btn {
+  width: 30px; height: 30px;
+  display: grid;
+  place-items: center;
+  /* `place-items: center` only handles centering when display is grid;
+   * `justify-content` doubles as a fallback if some descendant CSS
+   * coerces the button into a flex layout. `padding: 0` overrides the
+   * user-agent default (1px 6px on `<button>`) which otherwise pushes
+   * the SVG off-center horizontally. */
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-mute);
+  border-radius: var(--radius-sm);
+  transition: background .12s, color .12s;
+}
+.icon-btn:hover { background: var(--bg-3); color: var(--text); }
+.icon-btn.danger:hover { background: var(--danger-soft); color: var(--danger); }
+.icon-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+/* ============== Content pane ============== */
+
+.content-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  height: 100%;
+  background: var(--bg);
+}
+.content-empty {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  color: var(--text-mute);
+  text-align: center;
+  padding: 32px;
+  font-size: 1rem;
+}
+.content-empty .fiction-warning {
+  margin-top: 12px;
+  max-width: 480px;
+  line-height: 1.45;
+}
+.content-empty .shortcut-list {
+  margin-top: 22px;
+  max-width: 520px;
+  font-size: 0.857rem;
+  color: var(--text-mute);
+}
+.content-empty .shortcut-title {
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+  margin-bottom: 8px;
+}
+.content-empty .shortcut-row {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 12px;
+  align-items: baseline;
+  padding: 3px 0;
+}
+.content-empty .shortcut-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.content-empty kbd {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.content-empty h3 {
+  font-size: 1.286rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin: 0 0 6px;
+}
+
+.page-header {
+  height: var(--header-h);
+  padding: 0 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-1);
+  flex-shrink: 0;
+}
+/* Name (h2) prefers to keep its content size and only truncates after the
+ * UUID has been shrunk to nothing. When the container is tight: spacer
+ * collapses first (basis 0, shrink 1), then the UUID (high shrink), then
+ * the name. All three are single-line + ellipsis. */
+.page-header h2 {
+  margin: 0;
+  font-size: 1.071rem;
+  font-weight: 600;
+  flex: 0 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.page-header .spacer { flex: 1 1 0; min-width: 0; }
+.page-header .uuid {
+  font-family: var(--font-mono);
+  font-size: 0.786rem;
+  color: var(--text-faint);
+  flex: 0 5 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dirty-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  margin-right: 8px;
+  vertical-align: middle;
+  transition: background-color .18s ease, opacity .18s ease;
+  flex-shrink: 0;
+}
+.dirty-dot.dirty  { background: var(--text-mute); }
+.dirty-dot.saving { background: var(--accent); animation: dirty-pulse 1.1s ease-in-out infinite; }
+.dirty-dot.error  { background: var(--danger, #d33); }
+@keyframes dirty-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
+.page-scroll {
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  min-height: 0;
+}
+.page-body {
+  padding: 24px;
+  max-width: 940px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.form-group { margin-bottom: 18px; }
+.form-group label {
+  display: block;
+  font-size: 0.857rem;
+  font-weight: 600;
+  color: var(--text-mute);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: 6px;
+}
+.form-group .hint {
+  font-size: 0.857rem;
+  color: var(--text-mute);
+  margin-top: 4px;
+}
+.form-group .row { display: flex; gap: 10px; align-items: center; }
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="password"],
+.form-group input[type="url"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+}
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: var(--font-content);
+  line-height: 1.5;
+}
+.form-group.checkbox {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.form-group.checkbox label {
+  margin: 0;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text);
+}
+
+/* Slider + live readout (e.g. max bubble width). Mirrors .tts-speed-controls. */
+.range-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.range-row > input[type="range"] { flex: 1; min-width: 0; }
+.range-value {
+  min-width: 5.5em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-mute);
+  font-size: 13px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 18px;
+}
+.form-grid .form-group, .form-grid-2 .form-group, .form-grid-3 .form-group { margin-bottom: 0; }
+
+/* Emotion sprites grid (contact edit page). 6 columns on desktop, collapses
+ * to 1 column on phones via the mobile media query at the bottom of this
+ * file. Promoted from an inline style so the override has clean specificity. */
+.emotion-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+/* Example-message editor row (contact edit page → example chats). Mode
+ * selector / message text / emotion / delete-button on desktop; collapses
+ * to a single column on phones. */
+.example-message-row {
+  display: grid;
+  /* The trash column matches the textarea's natural 2-row height (2 × line-
+   * height + 16 px vertical padding + 2 px border on the textarea). Using
+   * ``lh`` keeps it tracking the user's font-size setting; ``aspect-ratio``
+   * on the auto column wasn't reliable because grid stretch-derived heights
+   * don't always feed back into width derivation. */
+  grid-template-columns: 150px 1fr 140px calc(2lh + 18px);
+  gap: 6px;
+  margin-bottom: 6px;
+}
+/* Trash stretches to fill the row height (driven by the textarea); width
+ * is locked by the column to match, so the button reads as a square. */
+.example-message-row > .icon-btn {
+  width: 100%;
+  height: auto;
+  align-self: stretch;
+}
+/* Role + emotion pickers stretch to match the textarea's 2-row height so
+ * the row reads as one cohesive band instead of small dropdowns floating
+ * next to a tall input. */
+.example-message-row > .avatar-picker {
+  align-self: stretch;
+}
+.example-message-row > .avatar-picker > .avatar-picker-trigger {
+  height: 100%;
+}
+/* User-side rows hide (but keep layout space for) the emotion picker so
+ * toggling sender doesn't shift the trash column or rebuild the row.
+ * ``visibility: hidden`` also drops the slot from the tab order. */
+.example-message-row.is-user > .emotion-slot {
+  visibility: hidden;
+}
+/* Avatar preview + button column (contact / user edit pages). Wraps on
+ * phones so the buttons drop below the 120 px preview. */
+.avatar-edit-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* Two-column wrapper that pairs the avatar editor with the card-image
+ * editor side by side on desktop. The mobile-layout block collapses
+ * this to a single column. Both children share the same internal
+ * structure (caption / preview / actions) so they read as a matched
+ * pair rather than two unrelated blocks. */
+.media-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.media-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+.media-block-label {
+  font-size: 0.786rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-mute);
+}
+.card-image-preview {
+  width: 120px;
+  height: 120px;
+  background: var(--bg-2);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.card-image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.card-image-empty {
+  color: var(--text-mute);
+  font-size: 0.786rem;
+  text-align: center;
+  padding: 12px 8px;
+}
+.card-image-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Reminder brain — single optional panel on the contact edit view. */
+.reminder-brain-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  background: var(--surface);
+}
+.reminder-brain-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+.reminder-brain-empty-text {
+  color: var(--text-mute);
+  font-size: 0.929rem;
+}
+.reminder-brain-row.disabled {
+  opacity: 0.55;
+}
+.reminder-brain-header {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.reminder-brain-name {
+  flex: 1 1 auto;
+}
+.reminder-brain-depth {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.929rem;
+}
+.reminder-brain-depth label {
+  font-weight: 600;
+  color: var(--text-mute);
+}
+.reminder-brain-depth input[type="number"] {
+  width: 70px;
+}
+.reminder-brain-content {
+  width: 100%;
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Disabled toggle on brain rows + reminder rows: dim the row when active. */
+.icon-btn.brain-disabled-toggle.active {
+  color: var(--text-mute);
+}
+.brain-row.disabled {
+  opacity: 0.55;
+}
+
+/* Cascading library picker — one row per attached library plus a trailing
+ * "(none)" picker. Stacked vertically; full-width so the dropdowns line up
+ * with their label column. The ``.missing`` state greys out the trigger so
+ * dangling references to deleted libraries are visually distinct. */
+.library-cascade { display: flex; flex-direction: column; gap: 6px; }
+.library-cascade-row { width: 100%; }
+.library-cascade-row.missing .avatar-picker-trigger {
+  border-style: dashed;
+  color: var(--text-mute);
+  opacity: 0.85;
+}
+
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 18px;
+}
+.section h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* AER / Generic tab switcher at the top of the Inference section. Sits
+ * where the section ``<h3>`` would; the active tab reads like the
+ * section title. Matches ``.section h3`` for size/weight so the
+ * non-active tab looks like a related-but-clickable alt-title. */
+.inference-tabs {
+  display: flex;
+  gap: 16px;
+  margin: 0 0 12px;
+  border-bottom: 1px solid var(--border);
+}
+.inference-tab {
+  background: none;
+  border: none;
+  padding: 4px 0 8px;
+  margin-bottom: -1px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--text-mute);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color .12s, border-color .12s;
+}
+.inference-tab:hover { color: var(--text); }
+.inference-tab.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+/* Count chip next to section headings. Generic — works in h3, in
+ * ``.form-group label``, etc. The ``.nested-card`` override below shifts
+ * it to ``--bg-3`` when the surrounding card is already ``--bg-2``. */
+.badge {
+  display: inline-block;
+  font-size: 0.786rem;
+  font-weight: 500;
+  background: var(--bg-2);
+  color: var(--text-mute);
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0;
+  text-transform: none;
+  vertical-align: middle;
+}
+.nested-card .badge { background: var(--bg-3); }
+
+.section-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Brain editor rows + activation/advanced-condition UI. Shared between
+ * the inline editor (Contact/User/Scenario/ContactScenario) and the
+ * per-message modal. */
+.brain-row {
+  position: relative;
+}
+.brain-row-del {
+  margin-top: 8px;
+}
+.brain-row .brain-activation,
+.brain-row .brain-advanced {
+  margin-top: 12px;
+  border-top: 1px dashed var(--border);
+  padding-top: 12px;
+}
+.brain-row .brain-activation > summary,
+.brain-row .brain-advanced > summary {
+  cursor: pointer;
+  font-size: 0.857rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-mute);
+  list-style: none;
+  user-select: none;
+  padding: 2px 0;
+}
+.brain-row .brain-activation > summary::before,
+.brain-row .brain-advanced > summary::before {
+  content: '▸';
+  display: inline-block;
+  width: 1em;
+  transition: transform .15s;
+}
+.brain-row .brain-activation[open] > summary::before,
+.brain-row .brain-advanced[open] > summary::before {
+  transform: rotate(90deg);
+}
+.brain-row .brain-advanced {
+  margin-left: 0;
+}
+
+.brain-keys {
+  margin: 8px 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.brain-keys > label {
+  font-size: 0.857rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+.brain-key-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.brain-key-row > input[type="text"] {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.brain-key-row .brain-key-range,
+.brain-key-row .brain-key-messages {
+  width: 80px;
+  flex: 0 0 80px;
+}
+.brain-key-row .brain-key-del {
+  padding: 4px 8px;
+}
+.brain-key-row .brain-key-toggles {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.brain-key-row .brain-key-numerics {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* Square-ish toggle buttons (regex /.*/  + case-sensitivity Aa). */
+.btn.toggle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.857rem;
+  padding: 4px 8px;
+  min-width: 40px;
+  justify-content: center;
+  background: var(--bg-2);
+}
+.btn.toggle.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+input.invalid {
+  border-color: var(--danger) !important;
+  background: var(--danger-soft);
+}
+
+.brain-flags {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0 12px;
+}
+.brain-advanced-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.brain-flag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 0.929rem;
+}
+/* When ``.brain-flag`` doubles as a ``.help-row`` (label + (?) icon side
+ * by side), the help-row's ``align-items: center`` centers the label as a
+ * flex item, but the label's own children (checkbox + text) need to stay
+ * baseline-aligned too — otherwise the text drifts below the checkbox. */
+.brain-flag.help-row > label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.brain-hint {
+  font-size: 0.786rem;
+  color: var(--text-mute);
+  line-height: 1.45;
+}
+.brain-hint.inline {
+  display: inline;
+  margin-left: 4px;
+}
+.brain-hint-list {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.brain-hint-list code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: var(--bg-2);
+  padding: 0 4px;
+  border-radius: 3px;
+  color: var(--text);
+}
+
+/* Inline "(?)" help button + portalled popover. The button is a small
+ * inline-flex icon; clicking it opens ``.help-popover`` portalled to
+ * ``<body>`` with ``position: fixed``. No layout shift on toggle —
+ * surrounding form elements stay put, including any checkboxes the
+ * button sits next to. See ``ui.js#helpDetails``. */
+.help-btn {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-faint);
+  transition: color .12s, background .12s, border-color .12s;
+  flex: 0 0 auto;
+}
+.help-btn:hover,
+.help-btn.open {
+  color: var(--text);
+  background: var(--bg-2);
+  border-color: var(--border);
+}
+.help-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.help-popover {
+  position: fixed;
+  /* Higher than ``.modal-root`` (z-index 100) so a (?) opened inside a
+   * modal renders above the modal's overlay rather than disappearing
+   * under it. */
+  z-index: 110;
+  padding: 10px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  font-size: 0.786rem;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  text-align: left;
+  white-space: normal;
+  color: var(--text-mute);
+  line-height: 1.5;
+  overflow-y: auto;
+}
+.help-popover.hidden {
+  display: none;
+}
+.help-popover code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: var(--bg-3);
+  padding: 0 4px;
+  border-radius: 3px;
+  color: var(--text);
+}
+.help-popover ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.help-popover > * + * {
+  margin-top: 6px;
+}
+
+/* Layout wrapper for "label + (?) icon" rows. Keeps the icon inline at
+ * the end of the label without the popover affecting the row's height. */
+.help-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.help-row > h3,
+.help-row > h2 {
+  margin: 0;
+  /* Heading line-height pushes the descent below the help-button's
+   * icon box (which is just 18 px tall), making the (?) appear too
+   * low next to the text. Trim the line box so its visual centre
+   * lines up with the icon's centre. */
+  line-height: 1;
+}
+
+/* Logic-tree node (recursive). */
+.cond-node {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cond-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.cond-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cond-compare {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.cond-value {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.cond-children {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 12px;
+  border-left: 2px solid var(--border);
+}
+.cond-child-row {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+.cond-child-row > .cond-node {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.cond-slot {
+  padding-left: 12px;
+  border-left: 2px solid var(--border);
+}
+.cond-aside {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.857rem;
+  color: var(--text-dim);
+}
+.cond-random-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cond-random-row .cond-random-input {
+  width: 90px;
+  flex: 0 0 90px;
+}
+
+/* Generation preset card (settings tab → presets section). The header row
+ * is a flex with name+uuid on the left (allowed to truncate) and the
+ * default-chip + export/delete buttons on the right (fixed-size). */
+.preset-card {
+  background: var(--bg-2);
+}
+.preset-card-default {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-soft) inset;
+}
+.preset-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+.preset-card-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.preset-card-name {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  padding: 0;
+  outline: none;
+  width: 100%;
+  min-width: 0;
+}
+.preset-card-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.preset-default-chip {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent-soft);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ============== Theme picker (settings) ==============
+   3x3 grid of mini-mockup tiles. Each tile sets its own [data-theme],
+   so the preview inside renders with that theme's CSS variables. */
+
+.theme-picker {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+.theme-tile {
+  position: relative;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.theme-tile:hover { border-color: var(--border-hi); transform: translateY(-1px); }
+.theme-tile:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.theme-tile.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+.theme-tile.selected::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.theme-tile-preview {
+  /* Use the tile's own [data-theme] vars: this subtree renders as that theme. */
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 130px;
+  text-align: left;
+}
+.theme-tile-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.theme-tile-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+.theme-tile-title { letter-spacing: 0.01em; }
+.theme-tile-bubble {
+  font-size: 0.85rem;
+  padding: 5px 12px;
+  border-radius: 999px;
+  align-self: flex-start;
+  max-width: 80%;
+  font-family: var(--font-content);
+}
+.theme-tile-bubble.contact {
+  background: var(--bubble-contact);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.theme-tile-bubble.user {
+  background: var(--bubble-user);
+  color: var(--bubble-user-text);
+  align-self: flex-end;
+}
+
+/* ============== Chat view ============== */
+
+.chat-view {
+  display: grid;
+  /* Rows: header (fixed) / config (content) / messages (fills) / input (content).
+   * The 1fr has to land on .chat-messages so the input bar stays pinned to the
+   * bottom on short chats — otherwise the messages row collapses to its
+   * content height and input floats up with it. */
+  grid-template-rows: var(--header-h) auto 1fr auto;
+  /* Single column that's allowed to shrink below its content's min-content.
+   * Without ``minmax(0, 1fr)``, the grid track sizes to bubbles' intrinsic
+   * width and the chat-view grows past its flex-parent on narrow viewports
+   * (iPad portrait, phones), forcing horizontal scroll instead of wrapping. */
+  grid-template-columns: minmax(0, 1fr);
+  /* Fill the flex-column parent (.content-pane). Without ``flex: 1`` the grid
+   * is content-sized and the 1fr row collapses to content height — the input
+   * bar then rides up with the messages on short chats. ``min-height: 0`` lets
+   * .chat-messages actually scroll instead of forcing the grid to grow.
+   * ``min-width: 0`` matches: lets the flex parent shrink chat-view below its
+   * intrinsic min-content so bubbles wrap on narrow viewports. */
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-1);
+  height: var(--header-h);
+}
+/* The mobile ``…`` toggle is irrelevant on desktop where everything
+ * fits inline. Hidden by default; the mobile media query unhides it. */
+.chat-header .header-more-toggle { display: none; }
+.chat-header .title {
+  font-weight: 600;
+  font-size: 1.071rem;
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  outline: none;
+  min-width: 0;
+}
+.chat-header .controls { display: flex; gap: 6px; align-items: center; }
+.chat-header select {
+  padding: 6px 26px 6px 10px;
+  font-size: 0.929rem;
+}
+
+.chat-config {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-1);
+  font-size: 0.857rem;
+  color: var(--text-mute);
+}
+.chat-config label { display: flex; align-items: center; gap: 6px; }
+.chat-config .chat-tags input {
+  padding: 4px 8px;
+  font-size: 0.857rem;
+  width: 220px;
+}
+.chat-config select {
+  padding: 5px 24px 5px 10px;
+  font-size: 0.857rem;
+  font-weight: 500;
+  background-position:
+    calc(100% - 11px) calc(50% - 2px),
+    calc(100% - 7px) calc(50% - 2px);
+}
+/* Picker overrides for the inline chat-config bar — match the compact
+ * select styling used elsewhere in this bar. */
+.chat-config .avatar-picker-trigger {
+  width: auto;
+  padding: 5px 10px;
+  font-size: 0.857rem;
+  font-weight: 500;
+}
+/* The default label rule grows-to-fill, which collapses against an
+ * auto-width trigger and produces a "blank space + ellipsised letters"
+ * layout. Inside a content-sized trigger, let the label size to its
+ * own text instead. */
+.chat-config .avatar-picker-label {
+  flex: 0 0 auto;
+}
+/* Stacked layout: used by the mobile chat-settings modal so the same
+ * fields render as a vertical column with full-width inputs. */
+.chat-config.stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  padding: 0;
+  border-bottom: none;
+  background: transparent;
+  font-size: 1rem;
+}
+.chat-config.stacked > label {
+  width: 100%;
+  flex-wrap: nowrap;
+}
+.chat-config.stacked select,
+.chat-config.stacked .chat-tags input {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+  font-size: 1rem;
+  padding: 8px 28px 8px 10px;
+}
+.chat-config.stacked .avatar-picker { flex: 1; min-width: 0; }
+.chat-config.stacked .avatar-picker-trigger {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 1rem;
+}
+.chat-config.stacked .chat-tags input {
+  padding: 8px 10px;
+}
+.chat-config.stacked .chat-stats {
+  align-self: flex-end;
+  margin-top: 4px;
+}
+/* Compact "Model" button in the desktop config bar — opens the per-chat
+ * Provider / Model / Context-preset override popover. Styled to match the bar's
+ * other compact controls; the accent dot flags an active override. */
+.chat-config-model-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  font-size: 0.857rem;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.chat-config-model-btn:hover { background: var(--bg-3); border-color: var(--border-hi); }
+.chat-config-model-btn .override-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+/* Per-chat override rows live in a stacked config (popover / mobile gear modal /
+ * wizard). The Model row wraps a picker + reload button, so give the wrap the
+ * same flex:1 the bare pickers get. */
+.chat-config.stacked .tts-model-pickerwrap { flex: 1; min-width: 0; }
+
+/* Wrapper for the messages region. Sits in row 3 of .chat-view (1fr) so the
+ * input bar still pins to the bottom; flex column with min-height:0 lets the
+ * inner .chat-messages scroll. Provides the positioning context for the
+ * scenario-background layers, which fill the pane and stay put while
+ * bubbles scroll past. */
+.chat-messages-wrap {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.chat-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+/* Hide the entire stack when no scenario bg is set, so a chat without a
+ * background skips the layered painting entirely. */
+.chat-messages-wrap:not([data-has-bg="true"]) .chat-bg { display: none; }
+
+.chat-bg-image {
+  position: absolute;
+  inset: 0;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: var(--bg-focal-x, 50%) var(--bg-focal-y, 50%);
+  background-repeat: no-repeat;
+  filter: blur(var(--bg-blur, 0px));
+}
+.chat-messages-wrap[data-mode="tile"] .chat-bg-image {
+  background-size: auto;
+  background-position: 0 0;
+  background-repeat: repeat;
+}
+.chat-bg-tint {
+  position: absolute;
+  inset: 0;
+  background: var(--scenario-tint);
+  mix-blend-mode: multiply;
+  opacity: var(--bg-tint-strength, 0);
+}
+.chat-bg-dim {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: var(--bg-dim, 0);
+}
+.chat-bg-brighten {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: var(--bg-brighten, 0);
+}
+
+/* Window-virtualization spacers reserve layout height for messages outside
+ * the loaded window so the scrollbar geometry stays correct. Pointer-events
+ * disabled inline so no clicks land on them; flex-shrink: 0 keeps them at
+ * their pixel-perfect computed height inside the messages flex column. */
+.virt-spacer { width: 100%; }
+
+/* Dashed divider above the earliest message that's still in the rolled-
+ * over context. Anything above this line was trimmed when building the
+ * next-turn prompt. */
+.context-divider {
+  height: 0;
+  border-top: 1px dashed var(--text-faint);
+  margin: 8px 0;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* Ctrl+F search pill — anchors top-right of the chat content pane. The
+ * pill floats above messages and is portaled via JS into the chat pane so
+ * it sits inside the chat surface, not the whole page. */
+.chat-search-pill {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface-hi);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px 6px;
+  box-shadow: var(--shadow-sm);
+  font-size: 0.857rem;
+}
+.chat-search-pill .search-input {
+  width: 200px;
+  padding: 4px 8px;
+  font-size: 0.857rem;
+}
+.chat-search-pill .search-input.regex-error {
+  border-color: var(--danger);
+}
+.chat-search-pill .search-toggle,
+.chat-search-pill .search-nav,
+.chat-search-pill .search-close {
+  font-size: 0.786rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-mute);
+  cursor: pointer;
+  font-family: inherit;
+  min-width: 26px;
+}
+.chat-search-pill .search-toggle:hover,
+.chat-search-pill .search-nav:hover,
+.chat-search-pill .search-close:hover {
+  background: var(--bg-3);
+  color: var(--text);
+}
+.chat-search-pill .search-toggle.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent-soft);
+}
+.chat-search-pill .search-counter {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-mute);
+  min-width: 36px;
+  text-align: center;
+  padding: 0 4px;
+}
+mark.search-mark {
+  background: var(--accent-soft);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+mark.search-mark.current {
+  background: var(--accent);
+  color: var(--bg-1);
+}
+
+.chat-messages {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  /* Clip the horizontal direction so peek messages translated past
+   * the viewport during a swipe gesture don't trigger horizontal
+   * scroll on the page (or on this container). */
+  overflow-x: clip;
+  /* Disable the browser's scroll-anchoring heuristic — it fights with our
+   * manual scrollTop updates during refreshMessages and produces a
+   * one-frame visible bounce when the typing indicator is replaced by the
+   * persisted message. */
+  overflow-anchor: none;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.msg {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 100%;
+  position: relative;
+}
+.msg.user { align-items: flex-end; }
+/* Tighter vertical spacing within a same-sender run. */
+.msg.group-cont { margin-top: -8px; }
+
+/* Contact message box shrinks to its content (like `.user-content` on the
+   user side) instead of spanning the pane, so a short reply is a short bubble
+   and the meta-row controls + hover overlay (both anchored to the message's
+   right edge) ride alongside it rather than stranding at the far side of a
+   wide pane. `justify-self: start` lets each bubble in a multi-bubble message
+   hug its own content; the box — and so the controls — sizes to the widest of
+   them. `max-width` caps the bubble at the configured width: offset (sprite
+   column + row gap) + the cap. Unlimited resolves to `100%`, making the calc
+   exceed the pane so the box spans the full width.
+
+   `min-width` floors the box so a short reply never shrinks under the action
+   controls — without it a continuation (whose controls live in an absolutely-
+   positioned overlay that adds no layout width) would hug a one-word bubble
+   and the overlay would spill back over the avatar sprite. The floor reserves
+   the controls' width in the bubble region (hence the same sprite-column +
+   gap offset as the max-width), so the controls clear the sprite; the bubble
+   still hugs its own content inside the floored box. 256px fits the widest
+   control set (branch-nav + all buttons) on both desktop and touch — they
+   land within a few px of each other (touch has larger buttons but hides the
+   branch-nav arrows). Buttons are fixed px, not font-relative, so it stays px.
+
+   `--bubble-max-width` is an em cap relative to the chat font; the bubble
+   resolves it against its own `--content-font-size`. Match that here so the
+   `em` in the calc agrees with the bubble even when the UI font (inherited
+   from `html`) differs — otherwise the two caps diverge. No visible effect on
+   the row: every text descendant (meta-row, sender name, bubble) sets its own
+   font size. */
+.msg.contact {
+  align-self: flex-start;
+  font-size: var(--content-font-size);
+  min-width: calc(var(--avatar-col) + var(--bubble-row-gap) + 256px);
+  max-width: calc(var(--avatar-col) + var(--bubble-row-gap) + var(--bubble-max-width, 100%));
+}
+.bubble-row.contact > .bubble { justify-self: start; }
+/* Bare bubbles (Generic origin, no avatar) drop the sprite column, so the
+   bubble starts at the message's left edge — no offset to add. */
+.msg.contact:has(> .bubble-row.bare) {
+  max-width: var(--bubble-max-width, 100%);
+}
+
+/* Keyboard-nav lock highlight: applied via JS when the user enters
+ * arrow-key message nav from the empty input bar. The scroll-margin keeps
+ * ``scrollIntoView({ block: 'nearest' })`` from snapping the message right
+ * up against the edge of the chat pane — gives the locked bubble some
+ * breathing room above/below. */
+.msg.nav-locked {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: var(--radius);
+  scroll-margin-top: 80px;
+  scroll-margin-bottom: 80px;
+}
+
+.msg.user .user-content {
+  position: relative;
+}
+
+.controls-overlay {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  display: flex;
+  gap: 2px;
+  background: var(--surface-hi);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  opacity: 0;
+  transition: opacity .12s;
+  z-index: 2;
+  box-shadow: var(--shadow-sm);
+}
+.msg.nav-locked .controls-overlay { opacity: 1; }
+/* Keyboard reveal: focusing any control inside the message lights the
+ * overlay so a Tab-only user can see what they've landed on. */
+.msg:focus-within .controls-overlay { opacity: 1; }
+/* Hover-gated reveal — only on real hover devices. The mobile/touch fallback
+ * (tap-to-reveal via .msg.controls-revealed) lives in the input-mode block. */
+@media (hover: hover) {
+  .msg:hover .controls-overlay { opacity: 1; }
+}
+
+.bubble-row {
+  display: grid;
+  gap: var(--bubble-row-gap);
+  align-items: start;
+  min-width: 0;
+}
+.bubble-row.contact {
+  grid-template-columns: var(--avatar-col) 1fr;
+  width: 100%;
+}
+.bubble-row.user {
+  grid-template-columns: 1fr;
+  width: 100%;
+}
+/* User avatar to the LEFT of the bubble (mirroring the contact layout),
+ * with the whole block right-aligned via ``.msg.user .user-content``.
+ * The sender-name in the meta-row above already sits in the same flex
+ * column, so it floats above the avatar like the contact row. */
+.bubble-row.user.with-avatar {
+  grid-template-columns: var(--avatar-col) 1fr;
+}
+.bubble-row.user > .avatar {
+  width: var(--avatar-col);
+  height: var(--avatar-col);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-2);
+}
+
+.msg.user .user-content {
+  display: inline-flex;
+  flex-direction: column;
+  align-self: flex-end;
+  gap: 6px;
+  max-width: 80%;
+  min-width: 0;
+}
+
+.emotion-sprite {
+  width: var(--avatar-col); height: var(--avatar-col);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+/* Default img sizing for uncropped sprites only — when .cropped is also
+ * applied, the crop math in `.cropped > img` (declared above) needs to win. */
+.emotion-sprite:not(.cropped) > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.emotion-sprite.no-image { color: var(--text-faint); font-size: 0.786rem; }
+
+.bubble-with-tag {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.bubble-emotion-row {
+  font-size: 0.786rem;
+  color: var(--text-mute);
+  font-style: italic;
+  padding-left: 4px;
+}
+
+.undelete-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--bg-1);
+  border: 1px dashed var(--border-hi);
+  border-radius: var(--radius);
+  color: var(--text-mute);
+  font-size: 0.929rem;
+}
+.undelete-row .icon, .undelete-row svg { color: var(--text-mute); flex-shrink: 0; }
+.undelete-text { flex: 1; min-width: 0; }
+.undelete-snippet {
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.bubble {
+  background: var(--bubble-contact);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--font-content);
+  font-size: var(--content-font-size);
+  line-height: 1.55;
+  /* User-set readability cap (em, relative to chat font size); ``none`` =
+   * unlimited. Set on :root from settings (see applySettingsToDom / boot). */
+  max-width: var(--bubble-max-width, none);
+}
+.msg.user .bubble {
+  background: var(--bubble-user);
+  color: var(--bubble-user-text);
+  border-color: transparent;
+}
+.bubble.typing { font-style: italic; color: var(--text-mute); }
+.bubble.streaming { animation: pulse-soft 1.2s ease-in-out infinite; }
+.bubble .aer-bold              { font-weight: 700; }
+.bubble .aer-italic            { font-style: italic; }
+.bubble .aer-subdued           { color: var(--text-mute); }
+.msg.user .bubble .aer-subdued { color: var(--bubble-user-text-mute); }
+.bubble code {
+  font-family: var(--font-mono);
+  font-size: 0.857rem;
+  background: var(--bg-3);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.bubble pre {
+  background: var(--bg-3);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  margin: 6px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.bubble pre code { background: none; padding: 0; }
+/* User bubbles paint text in --bubble-user-text (white-ish in light/pastel),
+ * which collides with the pale --bg-3 used by code/pre. Re-darken just the
+ * code text in those two themes; everywhere else --bg-3 is already dark. */
+:is([data-theme="light"], [data-theme="pastel"]) .msg.user .bubble code,
+:is([data-theme="light"], [data-theme="pastel"]) .msg.user .bubble pre {
+  color: var(--text);
+}
+
+/* When a scenario background is active, nudge bubble backgrounds toward
+ * ~94% opacity so the image peeks through subtly without sacrificing
+ * legibility. No backdrop-filter — keep it cheap. */
+.chat-messages-wrap[data-has-bg="true"] .bubble {
+  background: color-mix(in oklab, var(--bubble-contact) 94%, transparent);
+}
+.chat-messages-wrap[data-has-bg="true"] .msg.user .bubble {
+  background: color-mix(in oklab, var(--bubble-user) 94%, transparent);
+}
+
+
+/* ============== Generic-bubble (markdown) + reasoning tray ============== */
+
+/* Generic-origin bubbles run through ``marked`` so they emit block-level
+ * elements (lists, headings, fences, paragraphs). The default ``.bubble``
+ * styling is paragraph-text-oriented; tighten paragraph spacing here so
+ * markdown-rendered content doesn't have ballooning top/bottom margins.
+ *
+ * Override ``.bubble``'s ``white-space: pre-wrap`` for generic content —
+ * marked emits its own block structure, and ``pre-wrap`` would render
+ * the literal ``\n`` between blocks as visible spacing on top of each
+ * block element's own margins. ``<pre>`` blocks below re-enable pre-wrap
+ * for code. */
+.bubble.generic { white-space: normal; }
+.bubble.generic pre { white-space: pre-wrap; }
+.bubble.generic > :first-child { margin-top: 0; }
+.bubble.generic > :last-child  { margin-bottom: 0; }
+.bubble.generic p { margin: 0 0 0.35em; }
+.bubble.generic p:last-child { margin-bottom: 0; }
+.bubble.generic ul,
+.bubble.generic ol { margin: 0.2em 0 0.35em; padding-left: 1.4em; }
+.bubble.generic li { margin: 0; }
+/* Loose lists (blank lines between items) wrap each item in <p> — keep
+ * the <p> margin tight so the loose form doesn't sprawl. */
+.bubble.generic li > p { margin: 0 0 0.15em; }
+.bubble.generic li > p:last-child { margin-bottom: 0; }
+.bubble.generic h1,
+.bubble.generic h2,
+.bubble.generic h3,
+.bubble.generic h4 { margin: 0.5em 0 0.3em; line-height: 1.25; }
+.bubble.generic blockquote {
+  margin: 0.3em 0;
+  padding-left: 0.8em;
+  border-left: 3px solid var(--border-hi);
+  color: var(--text-dim);
+}
+.bubble.generic hr {
+  border: 0;
+  border-top: 1px solid var(--border-hi);
+  margin: 0.5em 0;
+}
+.bubble.generic a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.bubble.generic img {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  display: block;
+  margin: 6px 0;
+}
+/* AER-style italics: single-asterisk markdown emphasis (``*foo*``) gets
+ * the subdued color treatment that AER uses for narrative asides, so
+ * Generic + AER bubbles read with a consistent voice. ``**bold**`` stays
+ * full-strength; the muting only applies to ``<em>`` not also wrapped in
+ * ``<strong>``. */
+.bubble.generic em { color: var(--text-mute); }
+.bubble.generic strong em,
+.bubble.generic em strong { color: inherit; }
+.msg.user .bubble.generic em { color: var(--bubble-user-text-mute); }
+
+/* "Bare" contact bubbles — Generic origin with no avatar at all. Lay out
+ * the row without the avatar grid column so the bubble fills naturally. */
+.bubble-row.contact.bare {
+  grid-template-columns: 1fr;
+}
+
+/* Reasoning tray. Mounted INSIDE the bubble as its first child, so it
+ * reads as the message's preamble rather than a sibling block. The
+ * bubble already has 10px 14px padding; the tray's negative-margin trick
+ * lets the header/body span the full width of the bubble for a clean
+ * inset-card look without re-introducing the bubble's edge padding twice.
+ * Bubble-mode-agnostic — both AER and Generic messages can host one. */
+.reasoning-tray {
+  margin: -4px -8px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-2);
+  color: var(--text-dim);
+  font-size: 0.9em;
+  /* Reset font-style so the tray reads upright even when it sits inside
+   * a ``.bubble.typing`` (placeholder bubble during streaming) whose
+   * italic + muted styling would otherwise inherit into the tray. */
+  font-style: normal;
+  overflow: hidden;
+}
+.reasoning-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 4px 8px;
+  background: transparent;
+  border: 0;
+  color: var(--text-dim);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.reasoning-header:hover { background: var(--bg-3); }
+.reasoning-arrow {
+  font-size: 0.8em;
+  width: 1em;
+  text-align: center;
+  color: var(--text-mute);
+}
+.reasoning-label { font-weight: 600; }
+.reasoning-body {
+  padding: 4px 10px 6px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-1);
+  color: var(--text-dim);
+  /* Mirror the .bubble.generic white-space override so the rendered
+   * markdown reads correctly regardless of containing bubble class.
+   * During streaming the tray hosts inside the placeholder .bubble
+   * .streaming (no .generic), and .bubble's inherited pre-wrap would
+   * otherwise double the literal \n between block elements on top of
+   * <p> margins — visible as ballooning vertical whitespace until the
+   * first content delta swaps the placeholder for a .bubble.generic. */
+  white-space: normal;
+}
+.reasoning-body pre { white-space: pre-wrap; }
+.reasoning-body > :first-child { margin-top: 0; }
+.reasoning-body > :last-child  { margin-bottom: 0; }
+/* User bubbles use a coloured background; soften the tray inside them
+ * with theme-tinted neutrals so the reasoning section still reads as an
+ * indented sub-card rather than a foreign rectangle. */
+.msg.user .bubble > .reasoning-tray {
+  background: color-mix(in oklab, var(--bg-2) 60%, transparent);
+  border-color: color-mix(in oklab, var(--border), transparent 30%);
+  color: var(--bubble-user-text-mute);
+}
+.msg.user .bubble > .reasoning-tray .reasoning-body {
+  background: color-mix(in oklab, var(--bg-1) 60%, transparent);
+  color: var(--bubble-user-text-mute);
+}
+
+/* Info badge — small ``(i)`` button next to the sender name when the
+ * bubble has no avatar, so the user has somewhere to click to open the
+ * message-info popover. Bubble-mode-agnostic; mounted only when the
+ * bubble layout produced no avatar. */
+.msg-info-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 4px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: var(--text-mute);
+  cursor: pointer;
+}
+.msg-info-badge:hover { color: var(--accent); background: var(--bg-3); }
+
+/* Message-info popover. Anchored at the avatar (or info badge). Lighter
+ * than ``openModal``: no backdrop, no focus trap; outside-click / Escape
+ * dismiss. Positioned in fixed coordinates by the popover module. */
+.msg-info-popover {
+  position: fixed;
+  z-index: 100;
+  background: var(--surface-hi);
+  color: var(--text);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  padding: 8px 10px;
+  min-width: 220px;
+  max-width: 320px;
+  font-size: 0.9em;
+}
+.msg-info-popover dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 2px 10px;
+  align-items: baseline;
+}
+.msg-info-popover dt {
+  color: var(--text-mute);
+  font-weight: 600;
+}
+.msg-info-popover dd {
+  margin: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+
+/* ============== Scenario background editor ============== */
+
+/* Editor-side wrappers reuse the chat-bg layer stack (and thus the same
+ * CSS variables / data attributes) so previews render with the same logic
+ * as the live chat pane. ``.bg-preview`` is added alongside
+ * ``.chat-messages-wrap`` to attach editor-specific size/border styling. */
+.bg-preview {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-1);
+}
+.bg-preview .chat-bg { position: absolute; inset: 0; pointer-events: none; }
+.bg-preview:not([data-has-bg="true"]) .chat-bg { display: none; }
+.bg-preview[data-mode="tile"] .chat-bg-image {
+  background-size: auto;
+  background-position: 0 0;
+  background-repeat: repeat;
+}
+.bg-preview .preview-bubble {
+  position: relative;
+  z-index: 1;
+  background: color-mix(in oklab, var(--bubble-contact) 94%, transparent);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.786rem;
+  font-family: var(--font-content);
+  align-self: flex-start;
+  margin: 12px;
+  max-width: 70%;
+}
+
+.bg-edit-row {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.focal-picker {
+  position: relative;
+  display: inline-block;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-1);
+  cursor: crosshair;
+  user-select: none;
+  flex: 0 0 auto;
+}
+.focal-picker img {
+  display: block;
+  max-height: 240px;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  pointer-events: none;
+}
+.focal-dot {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.5);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.focal-picker.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.focal-picker.disabled .focal-dot { display: none; }
+
+.bg-slider-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 24px;
+  margin-top: 8px;
+}
+.bg-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bg-slider-row label { width: 70px; color: var(--text-mute); font-size: 0.857rem; }
+.bg-slider-row input[type="range"] { flex: 1; min-width: 0; }
+.bg-slider-row .bg-slider-val {
+  width: 48px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dim);
+  font-size: 0.857rem;
+}
+
+.bg-mode-toggle {
+  display: inline-flex;
+  gap: 14px;
+  margin: 6px 0;
+}
+.bg-mode-toggle label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+
+.bg-live-preview {
+  width: 100%;
+  height: 200px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.bg-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+.bg-theme-cell {
+  position: relative;
+  height: 110px;
+  cursor: pointer;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+.bg-theme-cell.selected {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.bg-theme-cell-label {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  z-index: 2;
+  font-size: 0.714rem;
+  color: var(--text);
+  background: color-mix(in oklab, var(--bg) 70%, transparent);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+
+.bg-empty {
+  padding: 18px;
+  text-align: center;
+  color: var(--text-mute);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-1);
+}
+
+/* The streaming indicator (`#typing-indicator`) re-uses the same .msg + .meta-row
+ * structure as a persisted msg, but its meta-row doesn't render the
+ * controls (.icon-btn buttons) — those only make sense once the msg has
+ * a real id. Without a min-height the indicator's meta-row collapses to
+ * the sender-name's text height, so when refreshMessages atomically
+ * swaps the indicator for the persisted msg (which DOES include the
+ * controls), the meta-row grows by `controls.height - name.height` and
+ * the user sees a one-frame layout shift. min-height nails the
+ * indicator's meta-row to the same height the persisted msg's
+ * meta-row will land at — no shift at the swap.
+ *
+ * Values match `.icon-btn`'s height: 30 px on desktop, 44 px on touch.
+ * The touch override lives in the `@media (hover: none)` block. */
+#typing-indicator .meta-row {
+  min-height: 30px;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.786rem;
+  color: var(--text-mute);
+}
+.sender-name { font-weight: 600; color: var(--text-dim); font-size: 1rem; text-decoration: none; }
+a.sender-name:hover { color: var(--text); }
+.emotion-tag { color: var(--text-mute); font-style: italic; }
+.msg .controls {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity .12s;
+}
+.msg.nav-locked .controls { opacity: 1; }
+/* Keyboard reveal: focusing any control inside the message lights the
+ * meta-row buttons so a Tab-only user can see what they've landed on. */
+.msg:focus-within .controls { opacity: 1; }
+/* Hover-gated reveal — only on real hover devices. The mobile/touch fallback
+ * (tap-to-reveal via .msg.controls-revealed) lives in the input-mode block. */
+@media (hover: hover) {
+  .msg:hover .controls { opacity: 1; }
+}
+.msg .branch-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .55; }
+}
+
+.chat-input-area {
+  border-top: 1px solid var(--border);
+  background: var(--bg-1);
+  padding: 12px 18px;
+  /* Tighter on the left than the right so the ghost menu button doesn't float;
+   * intentionally narrower than the Send button's gutter — it reads more
+   * naturally for a borderless icon than matching the filled button's inset. */
+  padding-left: 12px;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+/* Highlight while dragging image files over the bar (drop-to-attach). */
+.chat-input-area.drag-over {
+  outline: 2px dashed var(--accent);
+  outline-offset: -4px;
+  background: var(--accent-soft);
+}
+.chat-input-area .chat-input-actions {
+  display: flex;
+  gap: 6px;
+  align-self: stretch;
+}
+.chat-input-area .chat-input-actions .btn {
+  align-self: stretch;
+  padding: 0 18px;
+}
+.chat-input-area textarea {
+  flex: 1;
+  width: auto;
+  resize: none;
+  font-family: var(--font-content);
+  font-size: var(--content-font-size);
+  min-height: 38px;
+  max-height: 200px;
+}
+.chat-input-menu-btn {
+  align-self: stretch;
+  /* Override .icon-btn's fixed 30px box. height: auto + align-self: stretch
+   * fills the input row's height (matching the textarea + Send button); the
+   * 38px width keeps it ~square at the resting row height instead of a thin
+   * strip. padding: 0 (not the inherited-from-here 0 10px) so the icon centers
+   * with room rather than being squeezed into a 10px content box. */
+  height: auto;
+  width: 38px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.chat-input-menu-btn.open {
+  color: var(--text);
+}
+.chat-input-menu-panel {
+  position: fixed;
+  z-index: 1000;
+  min-width: 120px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.chat-input-menu-row {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+.chat-input-menu-row:hover {
+  background: var(--bg-3);
+}
+.chat-input-area-wrap {
+  display: flex;
+  flex-direction: column;
+}
+.chat-input-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 18px 0;
+  background: var(--bg-1);
+  border-top: 1px solid var(--border);
+}
+.chat-input-chips[hidden] { display: none; }
+.chat-input-chips.faded { opacity: 0.45; }
+.chat-input-chips.faded .chat-input-chip { cursor: help; }
+.chat-input-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 4px 4px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  max-width: 280px;
+}
+.chat-input-chip-thumb {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.chat-input-chip-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.chat-input-chip-name {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chat-input-chip-size {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+.bubble-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.bubble-attachments img {
+  max-width: 240px;
+  max-height: 240px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  display: block;
+}
+.chat-input-bar { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.chat-stats { font-size: 0.786rem; color: var(--text-faint); font-variant-numeric: tabular-nums; }
+.chat-stats-info {
+  /* Small ⓘ button rendered inline with the stat line. ``vertical-align:
+   * -2px`` nudges the icon onto the stat-line text baseline (the SVG
+   * sits high-aligned without it). */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-mute);
+  border-radius: 999px;
+  vertical-align: -2px;
+  margin-left: 2px;
+  transition: color .12s, background .12s;
+}
+.chat-stats-info:hover {
+  color: var(--text);
+  background: var(--bg-2);
+}
+
+/* Active-brains modal — list of every brain contributing to the next-
+ * turn prompt, grouped by owning entity, with token costs and deep
+ * links to the editor for each. */
+.active-brains-summary {
+  font-size: 0.857rem;
+  color: var(--text-mute);
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.active-brains-provenance {
+  font-size: 0.786rem;
+  color: var(--text-faint);
+  margin-bottom: 14px;
+  line-height: 1.45;
+}
+.active-brains-group {
+  margin-bottom: 12px;
+}
+.active-brains-group-head {
+  font-size: 0.786rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-mute);
+  margin-bottom: 4px;
+}
+.active-brains-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.active-brains-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.929rem;
+}
+.active-brains-row.deleted {
+  color: var(--text-faint);
+  border-style: dashed;
+}
+.active-brains-row-left {
+  display: inline-flex;
+  /* Use center alignment so the trash icon visually matches the cap
+   * height of the text it sits next to (baseline would drop the icon
+   * below the text since SVGs don't carry a text baseline). */
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+.active-brains-row-left svg {
+  flex: 0 0 auto;
+  color: var(--text-faint);
+}
+.active-brains-row.deleted .active-brains-link,
+.active-brains-row.deleted .active-brains-label {
+  color: var(--text-faint);
+}
+.active-brains-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  text-decoration: none;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.active-brains-link:hover { text-decoration: underline; }
+.active-brains-tokens {
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 auto;
+}
+
+/* ============== Modals ============== */
+
+.modal-root {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .55);
+  backdrop-filter: blur(2px);
+  display: grid;
+  place-items: center;
+  z-index: 100;
+}
+.modal-root.hidden { display: none; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100dvh - 64px);
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+.modal.large { width: min(800px, calc(100vw - 32px)); }
+/* Force every modal into the same grid cell so stacked modals overlap at the
+ * viewport centre instead of cascading down the grid's auto-rows. Explicit
+ * z-index is required because ``.modal-behind`` adds ``filter`` (creating a
+ * stacking context), which would otherwise lift the underlying modal above
+ * the in-flow topmost modal — grid items honour z-index without needing
+ * ``position: relative``. */
+.modal-root > .modal {
+  grid-row: 1;
+  grid-column: 1;
+  z-index: 1;
+}
+/* When a second modal is layered on top via ``openModal(..., {stack: true})``,
+ * dim and disable the underlying one so the active layer is unambiguous. */
+.modal.modal-behind {
+  filter: brightness(0.55) saturate(0.7);
+  pointer-events: none;
+  z-index: 0;
+}
+.modal h3 {
+  margin: 0 0 14px;
+  font-size: 1.143rem;
+  font-weight: 600;
+}
+.modal .modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+/* Avatar picker — searchable dropdown with avatars + favourite stars.
+ * Replaces native <select> in places that need image options (currently
+ * the new chat wizard). The popover is portaled to ``document.body`` and
+ * positioned via JS so it isn't clipped by the modal's overflow scroll. */
+.avatar-picker {
+  position: relative;
+}
+.avatar-picker-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-size: inherit;
+  transition: border-color .14s ease;
+}
+/* Reserve the avatar's height on every trigger inside an avatar-mode
+ * picker, even when the current value has no image, so selecting "(none)"
+ * doesn't visibly shrink the trigger relative to siblings showing avatars. */
+.avatar-picker.with-avatars .avatar-picker-trigger { min-height: 42px; }
+.avatar-picker-trigger:hover { border-color: var(--text-mute); }
+.avatar-picker-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.avatar-picker-trigger-avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+}
+.avatar-picker-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.avatar-picker-label.placeholder { color: var(--text-mute); }
+.avatar-picker-chevron {
+  color: var(--text-mute);
+  font-size: 0.857rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.avatar-picker-popover {
+  position: fixed;
+  z-index: 200;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg, 0 6px 24px rgba(0, 0, 0, 0.45));
+  display: flex;
+  flex-direction: column;
+  max-height: 320px;
+  overflow: hidden;
+}
+.avatar-picker-popover.hidden { display: none; }
+.avatar-picker-search {
+  border: none;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  margin: 0;
+  padding: 8px 12px;
+}
+.avatar-picker-search:focus { outline: none; }
+.avatar-picker-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 4px 0;
+}
+.avatar-picker-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text);
+  font-family: inherit;
+  font-size: inherit;
+}
+.avatar-picker-option-avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+}
+.avatar-picker-spacer { background: transparent; }
+.avatar-picker-option-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.avatar-picker-option.kb-active { background: var(--accent-soft); }
+.avatar-picker-option.selected { background: var(--bg-2); }
+.avatar-picker-option.selected.kb-active { background: var(--accent-soft-hi); }
+.avatar-picker-option-star {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.avatar-picker-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 12px;
+}
+.avatar-picker-empty {
+  padding: 12px;
+  color: var(--text-mute);
+  font-size: 0.929rem;
+  text-align: center;
+}
+
+/* ============== Context-preset editor ============== */
+
+/* Each block card sits inside a System Prompt section or a blocks-mode
+ * Additional Message. Header row carries name + enabled toggle + reorder
+ * controls; the body is a content textarea. Disabled blocks dim the body
+ * so the author can see at a glance which are parked.
+ */
+/* Block cards (system-prompt blocks + blocks-mode inner blocks) stay
+ * as small cards inside their containing ``.section``. Message cards
+ * are themselves top-level ``.section`` panels — they inherit the
+ * full surface look from ``.section`` rules above; we only need
+ * ``position: relative`` for the drop-indicator pseudo elements. */
+.context-preset-block {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+  padding: 10px;
+  margin: 8px 0;
+  position: relative;
+}
+.context-preset-message {
+  position: relative;
+}
+/* Drop indicator: thin accent line at the top or bottom edge of the
+ * hovered card during a drag. ``::before`` / ``::after`` pseudo elements
+ * keep the card's geometry stable so layout doesn't jitter on hover. */
+.context-preset-block.drop-before::before,
+.context-preset-message.drop-before::before,
+.context-preset-block.drop-after::after,
+.context-preset-message.drop-after::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.context-preset-block.drop-before::before,
+.context-preset-message.drop-before::before { top: -2px; }
+.context-preset-block.drop-after::after,
+.context-preset-message.drop-after::after { bottom: -2px; }
+.context-preset-block.disabled .context-preset-block-content,
+.context-preset-message.disabled .context-preset-block-content,
+.context-preset-message.disabled .context-preset-inner-blocks,
+.context-preset-message.disabled .context-preset-message-footer {
+  opacity: 0.5;
+}
+.context-preset-block-header,
+.context-preset-message-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.context-preset-block-content {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+}
+/* Footer row for message cards — role / mode / depth-when-float. Sits
+ * below the body content so the header keeps room for the name input. */
+.context-preset-message-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+.context-preset-message-role,
+.context-preset-message-mode,
+.context-preset-message-depth {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dim);
+  font-size: 0.86rem;
+}
+.context-preset-depth-label {
+  color: var(--text-dim);
+  font-size: 0.86rem;
+  min-width: 64px;
+}
+.context-preset-inner-blocks {
+  margin-top: 8px;
+  border-left: 2px solid var(--border);
+  padding-left: 10px;
+}
+
+/* Drag-and-drop grip + indicators ------------------------------------ */
+.move-grip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 28px;
+  color: var(--text-mute);
+  cursor: grab;
+  flex: 0 0 auto;
+  user-select: none;
+}
+.move-grip:hover { color: var(--text); }
+.move-grip:active { cursor: grabbing; }
+.context-preset-block.dragging,
+.context-preset-message.dragging { opacity: 0.45; }
+
+/* Enabled / float toggle buttons. Both reuse ``.icon-btn`` sizing but
+ * carry their own active-state colour: ``.enabled-toggle.off`` mutes
+ * (mirrors the brain row), ``.float-toggle.on`` paints accent. */
+.icon-btn.enabled-toggle.off {
+  color: var(--text-mute);
+  background: var(--bg-3);
+}
+.icon-btn.float-toggle.on {
+  color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+}
+
+/* Visual separator between static and floating Additional Messages. */
+.float-divider {
+  border: none;
+  border-top: 1px dashed var(--border);
+  margin: 16px 0;
+}
+
+/* Additional-messages area: container for the header panel, each
+ * per-message ``.section`` panel, and the trailing "+ Add message"
+ * row. No surface chrome of its own — the children carry their own. */
+.context-preset-msg-area {
+  display: flex;
+  flex-direction: column;
+}
+.context-preset-msg-header h3 { margin: 0; }
+.context-preset-msg-header { padding: 14px 18px; }
+.context-preset-msg-add {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: -10px;   /* tuck under the trailing section's margin-bottom */
+  margin-bottom: 18px;
+}
+
+/* Per-message collapsible preview panel at the bottom of each message
+ * card. ``<details>`` for native keyboard / a11y; we only style the
+ * summary's caret and the rendered-content body. */
+.context-preset-msg-preview {
+  margin-top: 10px;
+  border-top: 1px dashed var(--border);
+  padding-top: 8px;
+  color: var(--text-dim);
+  font-size: 0.9em;
+}
+.context-preset-msg-preview summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-dim);
+  list-style: none;
+  user-select: none;
+  padding: 2px 0;
+}
+.context-preset-msg-preview summary::-webkit-details-marker { display: none; }
+.context-preset-msg-preview summary::before {
+  content: '▶';
+  display: inline-block;
+  width: 1em;
+  font-size: 0.8em;
+  color: var(--text-mute);
+  margin-right: 4px;
+  transition: transform 0.12s ease;
+}
+.context-preset-msg-preview[open] summary::before { transform: rotate(90deg); }
+.context-preset-msg-preview-body {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Preview pane — read-only textareas styled like the editor's content
+ * textareas. Preserves whitespace so leading newlines are visible. */
+.preview-text {
+  width: 100%;
+  resize: vertical;
+  background: var(--bg-1);
+  color: var(--text-dim);
+  font-family: inherit;
+  white-space: pre-wrap;
+}
+.preview-msg {
+  margin-top: 8px;
+}
+
+/* Macros help modal. */
+.macros-help {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.macros-help-group h4 {
+  margin: 14px 0 6px;
+  color: var(--text-dim);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+.macros-help-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(0, 2fr) minmax(120px, 1fr);
+  gap: 12px;
+  align-items: baseline;
+  padding: 4px 0;
+}
+.macros-help-name,
+.macros-help-example {
+  font-family: var(--mono-font, ui-monospace, monospace);
+  background: var(--bg-2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  display: inline-block;
+  word-break: break-word;
+}
+.macros-help-desc {
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+/* Generic-only rail entries are hidden in AER mode via the hidden attr
+ * set by ``app.js#highlightRail``. The CSS rule below makes the hide
+ * effect immediate (no flicker if the attribute is applied after first
+ * paint) and tolerates the attribute being absent on first render. */
+html:not([data-provider-mode="generic"]) .rail-generic-only {
+  display: none;
+}
+
+/* Touch / hover-less devices — bigger tap targets in the picker rows so
+ * the popover behaves like its native counterpart on phones. */
+@media (hover: none) {
+  .avatar-picker-trigger {
+    min-height: 44px;
+  }
+  .avatar-picker-option {
+    padding: 10px 12px;
+    min-height: 44px;
+  }
+}
+
+/* ============== Toasts ============== */
+
+/* ============== History rows + Crop modal ============== */
+
+.history-row {
+  padding: 8px 10px;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background-color .12s;
+}
+.history-row:hover { background: var(--bg-2); }
+.history-row .history-time {
+  font-size: 0.857rem;
+  color: var(--text-mute);
+  margin-bottom: 2px;
+}
+
+.progress-phase {
+  display: inline-block;
+  font-size: 0.786rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-mute);
+  background: var(--bg-3);
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+.progress-phase.hidden { display: none; }
+.progress-label {
+  font-size: 0.929rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  min-height: 1.2em;
+}
+.progress-track {
+  height: 8px;
+  background: var(--bg-3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: width .15s ease;
+}
+.progress-counter {
+  font-size: 0.857rem;
+  color: var(--text-mute);
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.chat-info { display: flex; flex-direction: column; gap: 8px; min-width: 460px; }
+.chat-info .info-row {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.chat-info .info-row:last-of-type { border-bottom: none; }
+.chat-info .info-row.missing { color: var(--danger); }
+.chat-info .info-label {
+  font-size: 0.857rem;
+  color: var(--text-mute);
+  font-weight: 500;
+}
+.chat-info .info-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.chat-info .info-value > select,
+.chat-info .info-value > .avatar-picker { flex: 1 1 0; min-width: 140px; }
+/* uuid+copy slot — keep on one line. Compact since the uuid is truncated
+ * to its first 8 chars; the picker beside it is the one that should grow. */
+.chat-info .info-value > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 0 0 auto;
+}
+/* Reserve consistent width on the assign-row uuid slot so the flex picker
+ * doesn't expand wildly when the value is unset (just "—") versus when a
+ * truncated id + copy button are showing. The selector beats the
+ * ``.chat-info .info-value > span { min-width: 0 }`` rule above. */
+.chat-info .info-value > .info-uuid-slot { min-width: 110px; }
+.chat-info .info-value > span > .info-uuid { min-width: 0; flex: 0 1 auto; }
+.chat-info .info-value > span > .icon-btn { flex: 0 0 auto; }
+.chat-info .info-name {
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chat-info .info-uuid {
+  font-family: var(--font-mono);
+  font-size: 0.786rem;
+  color: var(--text-faint);
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  user-select: all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chat-info .info-uuid.muted { background: transparent; }
+
+.chat-missing-marker {
+  font-size: 0.786rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+  cursor: pointer;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+.chat-missing-marker:hover { background: rgba(247, 118, 142, .22); }
+
+.name-match-modal { min-width: 480px; max-width: 100%; }
+.name-match-role { margin: 14px 0; }
+.name-match-role h4 {
+  margin: 0 0 6px;
+  font-size: 0.929rem;
+  font-weight: 600;
+  color: var(--text-mute);
+}
+.name-match-options { display: flex; flex-direction: column; gap: 6px; }
+.name-match-row {
+  display: grid;
+  grid-template-columns: auto 36px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-1);
+  cursor: pointer;
+}
+.name-match-row:hover { background: var(--bg-2); border-color: var(--border-hi); }
+.name-match-row input[type="radio"] { margin: 0; }
+.name-match-meta { min-width: 0; }
+.name-match-title { font-weight: 500; }
+.name-match-uuid {
+  font-family: var(--font-mono);
+  font-size: 0.786rem;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+.name-match-desc {
+  font-size: 0.857rem;
+  color: var(--text-mute);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.deletion-response {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0 4px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.crop-surface-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 14px 0;
+}
+.crop-surface {
+  position: relative;
+  display: inline-block;
+  user-select: none;
+  touch-action: none;
+  background: var(--bg-3);
+  border-radius: var(--radius-sm);
+  /* No overflow:hidden here — the corner handles need to poke out past the
+   * image edge to stay grabbable when the rect is at the edge. The dark
+   * backdrop is clipped separately via .crop-clip below. */
+  max-width: 100%;
+  font-size: 0;
+}
+.crop-surface > img {
+  display: block;
+  max-width: min(700px, 100%);
+  max-height: 500px;
+  width: auto;
+  height: auto;
+  pointer-events: none;
+  border-radius: var(--radius-sm);
+}
+.crop-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: var(--radius-sm);
+}
+.crop-shadow {
+  position: absolute;
+  /* Casts the dark backdrop over everything outside the rect; clipped by
+   * .crop-clip's overflow:hidden so it stays inside the image area. */
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+}
+.crop-rect {
+  position: absolute;
+  border: 2px solid #fff;
+  cursor: move;
+  box-sizing: border-box;
+}
+.crop-handle {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border: 1.5px solid rgba(0, 0, 0, 0.55);
+  border-radius: 50%;
+  z-index: 2;
+}
+/* Transparent hit-area extension. Lets touch users grab a corner without
+ * needing to land precisely on the 14 px circle, while keeping the visual
+ * handle small (so it doesn't crowd small crop rects). The hit area
+ * extends only OUTWARD from the handle (away from the rect interior)
+ * so the rect body stays grabbable for "move" on small crops. The touch
+ * media query below expands the outward inset further.
+ *
+ * Insets are `top right bottom left`. Negative = extend, positive value
+ * = shrink (so pseudo's edge sits at or before the rect's edge). */
+.crop-handle::before {
+  content: '';
+  position: absolute;
+}
+.crop-handle.tl::before { inset: -8px 6px 6px -8px; }
+.crop-handle.tr::before { inset: -8px -8px 6px 6px; }
+.crop-handle.bl::before { inset: 6px 6px -8px -8px; }
+.crop-handle.br::before { inset: 6px -8px -8px 6px; }
+.crop-handle.tl { top: -8px; left: -8px; cursor: nwse-resize; }
+.crop-handle.tr { top: -8px; right: -8px; cursor: nesw-resize; }
+.crop-handle.bl { bottom: -8px; left: -8px; cursor: nesw-resize; }
+.crop-handle.br { bottom: -8px; right: -8px; cursor: nwse-resize; }
+
+
+.toast-root {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 200;
+  pointer-events: none;
+}
+.toast {
+  background: var(--surface-hi);
+  border: 1px solid var(--border-hi);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.929rem;
+  box-shadow: var(--shadow-md);
+  max-width: 360px;
+  pointer-events: auto;
+  animation: slide-in .25s ease-out;
+}
+.toast.error { border-color: var(--danger); color: var(--danger); }
+.toast.success { border-color: var(--ok); }
+.toast.dismissible { cursor: pointer; }
+
+/* Per-message brain button: filled-in accent tint when the message already
+ * carries brains, so the row reads at a glance without expanding controls. */
+.icon-btn.has-brains {
+  color: var(--accent);
+}
+.icon-btn.has-brains svg {
+  fill: var(--accent-soft);
+}
+
+/* Inline lore-badge under a message's sender row. Tight margin-top so it
+ * reads as part of the same message header rather than a separate row. */
+.meta-row.brain-badge-row {
+  margin-top: -2px;
+  gap: 4px;
+}
+.brain-badge {
+  font-size: 11px;
+  color: var(--accent);
+}
+.toast .toast-title { font-weight: 600; margin-bottom: 4px; }
+.toast .toast-body { display: flex; flex-direction: column; gap: 4px; }
+.toast .toast-list {
+  margin: 4px 0;
+  padding-left: 18px;
+  font-size: 0.857rem;
+  color: var(--text);
+}
+.toast .toast-list-name { font-weight: 500; }
+.toast .toast-list-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 500;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.toast .toast-list-link:hover { text-decoration-thickness: 2px; }
+.toast .toast-list-meta { color: var(--text-mute); }
+.toast .toast-hint {
+  margin-top: 6px;
+  font-size: 0.857rem;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+@keyframes slide-in {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* ============== Misc ============== */
+
+.uuid-mono {
+  font-family: var(--font-mono);
+  font-size: 0.786rem;
+  color: var(--text-faint);
+  letter-spacing: .02em;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 18px 0;
+}
+
+.scroll-shadow { box-shadow: 0 -1px 0 var(--border) inset; }
+
+.hidden { display: none !important; }
+
+
+/* ============== Zip-import picker ============== */
+
+.zip-picker { display: flex; flex-direction: column; min-height: 0; }
+.zip-picker-intro {
+  color: var(--text-mute);
+  font-size: 0.929rem;
+  margin: 4px 0 8px;
+}
+.zip-picker-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.zip-picker-search-wrap { flex: 1; min-width: 0; }
+.zip-picker-search {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.929rem;
+}
+.zip-picker-search:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.zip-picker-bulk { flex-shrink: 0; min-width: 180px; }
+.zip-picker-list {
+  /* The virtualizer mounts rows absolutely-positioned inside
+   * ``.virt-list-inner``; the list itself only provides the scroll
+   * viewport. ``scrollbar-gutter: stable`` reserves space for the
+   * vertical scrollbar so it doesn't pop in/out as content is added
+   * (which would otherwise narrow the rows briefly and cause a
+   * horizontal scrollbar to appear). The right padding keeps the
+   * scrollbar from butting up against the row's rounded right edge —
+   * looks nicer with a small gap. */
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  padding-right: 6px;
+}
+.virt-list-inner {
+  position: relative;
+}
+/* Row spacing is baked into the virtualizer's cumulative ``tops`` (see
+ * ``createVirtList`` in static/virt_list.js); rows are absolutely
+ * positioned so margin/gap CSS wouldn't push siblings anyway. */
+.zip-picker-row {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-1);
+}
+.zip-picker-row-contact { padding: 14px; }
+.zip-picker-row-flat { padding: 12px 14px; }
+.zip-picker-row-space {
+  margin-left: 24px;
+  padding: 10px 14px;
+  background: var(--bg);
+}
+.zip-picker-row-skipped { opacity: 0.55; }
+.zip-picker-row-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+/* Action picker fills the row's height on desktop — the trigger
+ * normally sits at button height, but a contact row with a
+ * description + tags is much taller, and a tiny button floating
+ * mid-row looks cramped. (Mobile overrides ``align-self`` via the
+ * wrap rule below to keep the picker on its own line at full width.) */
+.zip-picker-row-main > .avatar-picker {
+  align-self: stretch;
+}
+.zip-picker-row-main > .avatar-picker .avatar-picker-trigger {
+  height: 100%;
+}
+.zip-picker-children {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+.zip-picker-no-children {
+  color: var(--text-mute);
+  font-style: italic;
+  font-size: 0.857rem;
+  margin-left: 24px;
+}
+.zip-picker-chevron {
+  background: transparent;
+  border: none;
+  color: var(--text-mute);
+  cursor: pointer;
+  font-size: 0.929rem;
+  padding: 0 4px;
+  width: 22px;
+  text-align: center;
+}
+.zip-picker-chevron:hover { color: var(--text); }
+.zip-picker-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--bg-2);
+}
+.zip-picker-monogram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: var(--text-mute);
+  border: 1px solid var(--border);
+}
+.zip-picker-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.zip-picker-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-weight: 500;
+  /* Long unbroken names (URLs, long single tokens) would otherwise
+   * push the title past the row's right edge; allow mid-word breaks. */
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.zip-picker-desc {
+  color: var(--text-mute);
+  font-size: 0.857rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.zip-picker-tags {
+  color: var(--text-faint);
+  font-size: 0.786rem;
+}
+.zip-picker-path {
+  color: var(--text-faint);
+  font-size: 0.786rem;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.zip-picker-meta-row {
+  display: flex;
+  gap: 10px;
+  color: var(--text-faint);
+  font-size: 0.786rem;
+}
+.zip-picker-snippet {
+  color: var(--text-mute);
+  font-style: italic;
+  font-size: 0.857rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.zip-picker-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 0.714rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.zip-picker-badge-neutral {
+  background: var(--bg-2);
+  color: var(--text-mute);
+  border: 1px solid var(--border);
+}
+.zip-picker-badge-accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+
+/* ============== TTS ==============
+ *
+ * The chat pane has a floating pause/stop overlay in the upper-right
+ * (visible only when the player has an active queue). Per-message
+ * speaker buttons live in the existing .controls / .controls-overlay
+ * cluster — no special styling needed for those.
+ *
+ * The settings page TTS section uses standard form layout; the only
+ * bespoke pieces are the V1/V2 segmented toggle and the per-model
+ * voice editor inside the custom-API cards.
+ * ============================================== */
+
+.tts-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 4px;
+  background: var(--surface-hi);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  z-index: 6;                /* above .chat-messages bubbles + scroll-to-bottom */
+  box-shadow: var(--shadow-md);
+  opacity: 1;
+  transition: opacity .15s;
+}
+.tts-controls.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tts-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  cursor: pointer;
+  transition: background .12s;
+}
+.tts-icon-btn:hover { background: var(--bg-3); }
+.tts-icon-btn:active { background: var(--bg-2); }
+
+/* V1/V2 segmented toggle (settings page + per-contact override). */
+.tts-segmented {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.tts-seg-btn {
+  background: var(--surface);
+  color: var(--text-mute);
+  border: none;
+  padding: 5px 14px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.tts-seg-btn + .tts-seg-btn { border-left: 1px solid var(--border); }
+.tts-seg-btn:hover { background: var(--bg-3); color: var(--text); }
+.tts-seg-btn.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Refresh button next to the model picker — spins while a fetch is
+ * in flight. */
+.tts-reload-btn { padding: 6px; }
+.tts-reload-btn.spinning svg {
+  animation: tts-spin .8s linear infinite;
+}
+@keyframes tts-spin { to { transform: rotate(360deg); } }
+
+.tts-model-pickerwrap {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.tts-model-pickerwrap > :first-child { flex: 1; min-width: 0; }
+
+/* Speed slider with numeric readout to its right. */
+.tts-speed-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+/* Custom API card stacks the slider directly under the per-model
+ * editor; give it a touch of breathing room. */
+.preset-card > .tts-speed-controls { margin-top: 10px; }
+
+/* On narrow viewports, stacking the actions (✓ active chip / "Set as
+ * active" button / trash) below the name input prevents them from
+ * hovering on top of the input as flex shrinks the input to zero. */
+@media (max-width: 720px) {
+  .preset-card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .preset-card-actions {
+    justify-content: flex-end;
+  }
+}
+.tts-speed-controls > input[type="range"] { flex: 1; min-width: 0; }
+.tts-speed-readout {
+  min-width: 3.6em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-mute);
+  font-size: 12px;
+}
+
+/* Per-entity TTS section in the contact + user edit pages. The body
+ * uses plain block layout — the page's standard 18px form-group
+ * bottom margin drives row spacing; the .tts-checkbox-row falls
+ * back to its own bottom margin since it isn't a .form-group. */
+.tts-entity-body > .tts-checkbox-row { margin-bottom: 18px; }
+.tts-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tts-row-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-mute);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tts-checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.tts-custom-block {
+  padding-top: 4px;
+  border-top: 1px dashed var(--border);
+}
+/* Transparent container — defer vertical spacing to the page's
+ * standard ``.form-group { margin-bottom: 18px }`` rule so rows
+ * inside the TTS section stack uniformly with the rest of the
+ * settings page. */
+.tts-provider-config { display: block; }
+
+/* Key-set / key-missing chip below per-provider config. */
+.tts-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  width: max-content;
+  border: 1px solid var(--border);
+}
+.tts-indicator.ok {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.tts-indicator.warn {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+.tts-indicator-link {
+  margin-left: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+}
+.tts-indicator-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Custom-API list inside the settings page TTS section. */
+.tts-custom-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+.tts-custom-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.tts-custom-models {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+  border-top: 1px dashed var(--border);
+  border-bottom: 1px dashed var(--border);
+}
+.tts-models-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.tts-model-row-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 12px;
+  border-left: 2px solid var(--border);
+}
+.tts-model-row-controls {
+  display: flex;
+  gap: 6px;
+}
+.tts-model-row-controls > input { flex: 1; }
+.tts-voices-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 8px;
+}
+.tts-voice-row {
+  display: flex;
+  gap: 6px;
+}
+.tts-voice-row > input { flex: 1; }
+
+/* API-key input + X "clear" button — pairs the input with a flat
+ * trash/x button on the right when a key is already saved. */
+.tts-key-wrap {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.tts-key-wrap > input { flex: 1; min-width: 0; }
+.tts-key-clear {
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* "Test voice" textarea + Play/Stop. */
+.tts-test-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 0 4px;
+  border-top: 1px dashed var(--border);
+}
+.tts-test-textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 2.6em;
+  font-size: 13px;
+}
+.tts-test-actions {
+  display: flex;
+  gap: 8px;
+}
+
+
+/* ============== Mobile / touch ==============
+ *
+ * Two orthogonal media queries:
+ *   • @media (max-width: 720px) — phone-only LAYOUT: rail moves to the
+ *     bottom of the list pane (horizontal bar), and the master/detail
+ *     panes stack one-at-a-time. In detail mode the rail hides too —
+ *     the only chrome is a back arrow at top-left. iPads (≥768 px) and
+ *     desktop are unaffected.
+ *   • @media (hover: none) — any TOUCH device including iPad: 44 px touch
+ *     targets, tap-to-reveal fallback for hover-gated controls, swipe gesture
+ *     replaces branch-arrow buttons.
+ *
+ * Above 720 px AND hover-capable, this whole section is dead code.
+ *
+ * House rules (for adding new mobile-aware features):
+ *   1. Don't wrap existing elements in new containers; retarget them via CSS
+ *      variable overrides inside the layout block.
+ *   2. New `:hover` reveals must be paired with a non-hover fallback (gate
+ *      the hover variant in `@media (hover: hover)` and add an always-visible
+ *      or class-toggled variant inside `@media (hover: none)`).
+ *   3. New touch-active behaviors (gestures, swipes) must gate JS handlers
+ *      on `e.pointerType === 'touch'` so desktop pointer-down-and-drag never
+ *      triggers them.
+ */
+
+#mobile-nav-toggle,
+#mobile-chat-settings,
+.mobile-disclaimer {
+  display: none;
+}
+
+/* Touch-input-mode: phones, iPads, touchscreen laptops in tablet mode. */
+@media (hover: none) {
+  .icon-btn { width: 44px; height: 44px; }
+  .list-sort-mode,
+  .list-sort-dir,
+  .list-sort-fav { padding: 8px 8px; }
+  .chip { padding: 4px 10px; }
+  .chip button { padding: 4px 6px; margin-right: -6px; font-size: 1.1rem; }
+  /* Always-visible favorite stars (no row-hover to reveal them). */
+  .list-row .favorite-star { opacity: 1; }
+  /* Tap-to-reveal fallback: chat.js delegated click handler toggles
+   * .controls-revealed on the tapped .msg, clears it from siblings,
+   * and clears all on outside tap. */
+  .msg.controls-revealed .controls-overlay,
+  .msg.controls-revealed .controls { opacity: 1; }
+  /* Branch arrow buttons replaced by horizontal swipe on the bubble.
+   * The "1/N" sibling counter stays visible. */
+  .msg .branch-nav .icon-btn { display: none; }
+  .msg .branch-nav { gap: 0; }
+  /* Crop modal handles: keep the visible circle at the desktop size so
+   * small crop rects (e.g. 10 % × 7 %) don't look swallowed by handles —
+   * but expand the transparent hit area via the ::before. Per-corner
+   * insets so the hit zone extends OUTWARD only and the rect interior
+   * stays grabbable for the "move" gesture. */
+  .crop-handle.tl::before { inset: -14px 6px 6px -14px; }
+  .crop-handle.tr::before { inset: -14px -14px 6px 6px; }
+  .crop-handle.bl::before { inset: 6px 6px -14px -14px; }
+  .crop-handle.br::before { inset: 6px -14px -14px 6px; }
+
+  /* Bubble avatars: smaller on touch so they don't eat ~30 % of the row
+   * width. One knob feeds the emotion sprite, the user-message avatar, both
+   * grid templates that allocate room for them, and the `.msg.contact`
+   * controls-alignment math. */
+  :root { --avatar-col: 70px; }
+  /* Modest breathing room between the last bubble and the chat-input bar
+   * on touch. pinScroll targets `scrollHeight - clientHeight`, which
+   * lands the last bubble's bottom edge against the container's
+   * padding-bottom — so this padding directly governs the visible gap
+   * above the input bar after a stream lands or a swipe commits.
+   * `scroll-padding-bottom` extends the same gap to scrollIntoView calls
+   * (e.g. the swipe-back path uses block: 'nearest'). */
+  .chat-messages {
+    padding-bottom: 20px;
+    scroll-padding-bottom: 20px;
+  }
+  /* Match the indicator's meta-row to the persisted msg's
+   * (controls = 44 × 44 on touch). See the comment on the desktop rule. */
+  #typing-indicator .meta-row {
+    min-height: 44px;
+  }
+  /* Browser-level: only allow vertical pan via touch on bubble rows.
+   * Horizontal motions are reserved for the swipe gesture so the
+   * browser doesn't fire its own pan-x scroll alongside our JS swipe
+   * (they don't have horizontal scroll anyway, but this also keeps
+   * iOS from interpreting diagonal motions as both pan + swipe). */
+  .bubble-row {
+    touch-action: pan-y;
+  }
+  /* Focal picker dot is touch-driven (tap-to-position via .focal-picker
+   * pointer events); bump the indicator so the position is visible to
+   * a finger. */
+  .focal-dot { width: 26px; height: 26px; }
+}
+
+/* Phone-only LAYOUT: rail-at-bottom-of-list-pane + single-pane stack.
+ * iPads keep the desktop master-detail layout; only their input handling
+ * shifts via the touch media query above. */
+@media (max-width: 720px) {
+  /* The rail goes out of flow (fixed bottom bar in list mode); collapse
+   * #app's two-column grid to a single column so .main fills the viewport.
+   * (Setting --rail-w:0 via :root would leave .main parked in a 0 px first
+   * column.) */
+  #app {
+    grid-template-columns: 1fr;
+  }
+
+  /* Rail = horizontal bar pinned to the bottom of the viewport when in
+   * list mode. Hidden in detail mode (the chat input + back button take
+   * over the bottom + top). The rail's existing flex-column markup
+   * is retargeted to flex-row here. */
+  .rail {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-around;
+    height: calc(56px + env(safe-area-inset-bottom, 0px));
+    padding: 0 env(safe-area-inset-left, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-right, 0);
+    border-right: none;
+    border-top: 1px solid var(--border);
+    background: var(--bg-1);
+    z-index: 80;
+  }
+  /* The desktop sidebar-toggle and the rail-spacer are no-ops on mobile —
+   * hide them so the 6 tabs + theme toggle align cleanly. */
+  .rail-btn#sidebar-toggle { display: none; }
+  .rail-spacer { display: none; }
+  /* Cap each rail button at 64 px on mobile — with 7 buttons the smallest
+   * supported viewports (≥320 px) give ~45 px per button at the lower
+   * bound, the cap only kicks in on tablet-portrait widths and keeps
+   * the icons from drifting apart there. */
+  .rail-btn { flex: 1; height: 100%; max-width: 64px; }
+
+  /* In detail mode the rail disappears (along with the list pane). */
+  body.mobile-detail-open .rail { display: none; }
+
+  /* Mobile-only back button: visible only when a detail pane is open.
+   * In list mode there's no top-left button — the bottom rail is the
+   * primary navigation. */
+  #mobile-nav-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: max(8px, env(safe-area-inset-top, 0));
+    left: 8px;
+    z-index: 95;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    color: var(--text-mute);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background .12s, color .12s;
+  }
+  body.mobile-detail-open #mobile-nav-toggle { display: inline-flex; }
+  #mobile-nav-toggle:hover { color: var(--text); }
+  #mobile-nav-toggle:active { background: var(--bg-2); }
+
+  /* Single-pane master/detail. JS sets body.mobile-detail-open whenever
+   * the active tab has a selected entity AND viewport is ≤720 px.
+   * Settings is already .main.full so it's a no-op there.
+   *
+   * `minmax(0, 1fr)` (not bare `1fr` = `minmax(auto, 1fr)`) lets the
+   * track shrink below its content's min-content size — otherwise a
+   * single child with long unbreakable content (e.g. a contact list
+   * row whose description is one wide string) inflates the grid track
+   * past viewport width and pushes the header buttons off-screen. */
+  .main:not(.full) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* Default: show list, hide detail. */
+  .main:not(.full) > .content-pane,
+  .main:not(.full) > #chat-content-pane {
+    display: none;
+  }
+  /* Detail open: flip — show detail, hide everything else (the list-pane
+   * wrapper for chats has no class, so we hide every non-content child). */
+  body.mobile-detail-open .main:not(.full) > :not(.content-pane):not(#chat-content-pane) {
+    display: none;
+  }
+  body.mobile-detail-open .main:not(.full) > .content-pane,
+  body.mobile-detail-open .main:not(.full) > #chat-content-pane {
+    display: flex;
+  }
+
+  /* List body needs room above the bottom rail so the last row isn't tucked
+   * under it. Includes the safe-area inset so the rail's bottom edge sits
+   * above the home indicator on iOS. */
+  .list-pane {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Detail-pane headers carve out 56 px on the left for the fixed back
+   * button. List headers don't need this — there's no top-left chrome
+   * in list mode. */
+  body.mobile-detail-open .page-header,
+  body.mobile-detail-open .chat-header {
+    padding-left: 56px;
+  }
+
+  /* Header chrome is tight on phones: hide the entity UUID and shrink
+   * button labels to icon-only so the entity name keeps its space.
+   * The action buttons (New chat, Export, Delete) stay reachable; the
+   * UUID is desktop-only disambiguation. */
+  .page-header .uuid {
+    display: none;
+  }
+  .page-header .btn {
+    font-size: 0;
+    gap: 0;
+    padding: 8px 10px;
+    flex-shrink: 0;
+  }
+  .page-header .btn .icon,
+  .page-header .btn svg {
+    font-size: 1rem;
+  }
+
+  /* Inline chat-config row is replaced on mobile by a gear-icon modal
+   * (see chat.js openChatSettingsModal). The stacked variant inside the
+   * modal stays visible. */
+  .chat-config:not(.stacked) { display: none; }
+  /* And drop its row from the chat-view grid template — browsers skip
+   * display:none children during grid placement, which would otherwise
+   * shift the input into the 1fr (messages) row and inflate it to the
+   * full remaining height. With three rows + three visible children the
+   * input lands back in the auto row, sized to its content. */
+  .chat-view {
+    grid-template-rows: var(--header-h) 1fr auto;
+  }
+  /* The gear icon lives in the chat header; visible only on mobile. */
+  #mobile-chat-settings { display: inline-flex; }
+  /* The X close button in the chat header is redundant with the back
+   * arrow at top-left — hide it on mobile. */
+  .chat-header .controls .icon-btn[title="Close chat"] { display: none; }
+
+  /* Collapsible chat-header on phones. By default the title takes the
+   * full row plus a single ``…`` toggle button at the right; tapping
+   * the toggle swaps in the action row (info / bookmarks / search /
+   * export / delete). The toggle stays visible in both states so the
+   * user can dismiss the expanded row again. */
+  .chat-header .header-more-toggle {
+    display: inline-flex;
+    flex: 0 0 auto;
+  }
+  /* Toggle gets an "active" look in the expanded state so the user can
+   * see at a glance that ``…`` will collapse — without it the same
+   * button morphing function is invisible. */
+  .chat-header.controls-expanded .header-more-toggle {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .chat-header .controls { display: none; }
+  .chat-header.controls-expanded .title,
+  .chat-header.controls-expanded .chat-missing-marker { display: none; }
+  .chat-header.controls-expanded .controls {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 2px;
+    min-width: 0;
+  }
+  /* Tighten the action buttons to 36 px square so the 6-button row fits
+   * in the ~260 px the header has left after subtracting the back-arrow
+   * padding (56 px) and the toggle (44 px). The buttons are still
+   * comfortably tappable. */
+  .chat-header.controls-expanded .controls .icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  /* Search pill on phones: full-width inside the chat content pane so
+   * the input has room to breathe and the toggle / nav buttons don't
+   * overflow off-screen. */
+  .chat-search-pill {
+    left: 8px;
+    right: 8px;
+    flex-wrap: wrap;
+  }
+  .chat-search-pill .search-input {
+    width: auto;
+    flex: 1 1 140px;
+    min-width: 0;
+  }
+
+  /* Edge-swipe interactive back: while a swipe is in progress, the
+   * detail pane translates with the user's finger and the list pane
+   * peeks in from the left. JS sets body.edge-swiping during the gesture
+   * and the --edge-tx CSS variable. */
+  body.edge-swiping .main:not(.full) > .list-pane,
+  body.edge-swiping .main:not(.full) > :not(.content-pane):not(#chat-content-pane) {
+    display: flex !important;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  body.edge-swiping .main:not(.full) {
+    position: relative;
+  }
+  body.edge-swiping .main:not(.full) > .content-pane,
+  body.edge-swiping .main:not(.full) > #chat-content-pane {
+    transform: translateX(var(--edge-tx, 0px));
+    z-index: 2;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, .35);
+  }
+  /* During the post-release "commit" or "snap-back" phase, transition
+   * the transform smoothly. JS adds body.edge-swipe-anim for ~200 ms. */
+  body.edge-swipe-anim .main:not(.full) > .content-pane,
+  body.edge-swipe-anim .main:not(.full) > #chat-content-pane {
+    transition: transform .2s ease-out;
+  }
+
+  /* Form grids collapse to one column. The .form-grid case (auto-fit
+   * minmax 220 px) already handles this on its own. */
+  .form-grid-2,
+  .form-grid-3,
+  .emotion-grid,
+  .bg-slider-grid {
+    grid-template-columns: 1fr;
+  }
+  /* Theme picker tile grids drop from 3-up to 2-up. */
+  .bg-theme-grid,
+  .theme-picker {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* Avatar block (preview + buttons) wraps so the buttons drop below the
+   * 120 px preview rather than spilling sideways. */
+  .avatar-edit-row {
+    flex-wrap: wrap;
+  }
+  /* Avatar + card-image two-column → single column on phones. */
+  .media-row {
+    grid-template-columns: 1fr;
+  }
+  /* Brain key row stacks: pattern (full width), toggles + delete, then the
+   * numeric search-window inputs. */
+  .brain-key-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "text   text"
+      "toggles del"
+      "numerics numerics";
+    gap: 6px;
+    align-items: center;
+  }
+  .brain-key-row > input[type="text"] { grid-area: text; }
+  .brain-key-row .brain-key-toggles { grid-area: toggles; }
+  .brain-key-row .brain-key-del { grid-area: del; }
+  .brain-key-row .brain-key-numerics { grid-area: numerics; }
+  .brain-key-row .brain-key-range,
+  .brain-key-row .brain-key-messages { flex: 1 1 0; min-width: 0; }
+  /* Example-message editor row (contacts.js renderExampleMessageRow) —
+   * the 4-column desktop layout doesn't fit. Use a 2-row areas layout
+   * with the trash button tucked next to the role picker so it doesn't
+   * float on its own line at the bottom. The emotion slot drops to
+   * ``display: none`` on user-side rows since the row above is now
+   * tightly packed. */
+  .example-message-row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "role  trash"
+      "text  text"
+      "emote emote";
+  }
+  .example-message-row > .avatar-picker:not(.emotion-slot) { grid-area: role; }
+  .example-message-row > textarea { grid-area: text; }
+  .example-message-row > .emotion-slot { grid-area: emote; }
+  .example-message-row > .icon-btn {
+    grid-area: trash;
+    width: auto;
+    height: auto;
+    align-self: stretch;
+    justify-self: stretch;
+    aspect-ratio: 1 / 1;
+  }
+  .example-message-row.is-user > .emotion-slot { display: none; }
+  /* Each example-message row needs a visual break on mobile — without one
+   * the role + textarea + (optional) emotion + trash blocks blur into
+   * each other when stacked. */
+  .example-message-row {
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+  .example-message-row:first-of-type {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+  }
+  /* Tighter vertical rhythm in chat bubbles on phone — pulling the
+   * sender-name closer to its bubble buys back vertical real estate
+   * that the cramped viewport really needs. */
+  .msg { gap: 1px; }
+  .msg.group-cont { margin-top: -10px; }
+
+  /* Modal min-widths neutralized so they don't force horizontal scroll. */
+  .chat-info { min-width: auto; }
+  .name-match-modal { min-width: auto; }
+  /* Inside a chat-info row, the avatar picker + uuid + copy button can
+   * collectively overflow the modal on phone widths. Relax the picker's
+   * min-width (so it can compress slightly) and let the uuid-slot shrink
+   * BEFORE the picker (``flex: 0 1 auto``). The truncated uuid already
+   * ellipsises — losing trailing chars from an 8-char id is fine; losing
+   * dropdown width to the point you can't read the contact name is not. */
+  .chat-info .info-value > select,
+  .chat-info .info-value > .avatar-picker { min-width: 100px; }
+  .chat-info .info-value > .info-uuid-slot { min-width: 0; flex: 0 1 auto; }
+
+  /* Hide desktop-only chrome. */
+  .content-empty .shortcut-list { display: none; }
+
+  /* Chat input safe-area handling. The home-indicator inset goes into a
+   * border (visual-only, doesn't affect flex layout), so the textarea
+   * and send button stay at their content height instead of stretching
+   * to fill the full input-area height. The keyboard inset (rare —
+   * `100dvh` on `#app` already shrinks for the keyboard on Chrome and
+   * modern Safari; this is a fallback) goes into the normal
+   * padding-bottom. */
+  .chat-input-area {
+    /* Tighter horizontal padding than desktop's 18px — on a phone that wide
+     * gutter (plus the icon buttons' own 44px tap width) left the hamburger
+     * floating far from the edge and wasted input width. */
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: max(12px, var(--kb-inset, 0px));
+    border-bottom: env(safe-area-inset-bottom, 0px) solid var(--bg-1);
+    /* Stop align-items: stretch from inflating the textarea + send
+     * button to the full input-area height. With flex-end the children
+     * sit at their natural / inline-set size at the bottom of the
+     * input area; the JS auto-grow sets the textarea height on input. */
+    align-items: flex-end;
+  }
+  .chat-input-area .chat-input-actions .btn {
+    align-self: flex-end;
+    /* Match the textarea's min-height so the icon-only button doesn't
+     * collapse to its own content height (~16 px svg). */
+    min-height: 38px;
+  }
+  /* Drop the "Send" / "Cancel" word labels — icon-only on phones to leave
+   * more room for the input. */
+  .chat-input-area .chat-input-actions .btn .btn-label {
+    display: none;
+  }
+  .chat-input-area .chat-input-actions .btn {
+    padding: 0 14px;
+  }
+
+  /* Toast container: slim margin so it doesn't crowd the input area. */
+  .toast-root {
+    bottom: 8px;
+    right: 8px;
+    left: 8px;
+  }
+  .toast {
+    max-width: none;
+  }
+
+  /* Force scrollable behaviour on the major scrollable regions even when
+   * their content fits — gives iOS its rubber-band bounce when the user
+   * pulls on a short list. The `::after` is an absolutely-positioned
+   * 1 px sentinel that pads the scrollHeight by 1 px (invisible because
+   * it's a degenerate 1 × 1 px box at the very bottom), so iOS sees the
+   * region as scrollable even when content fits.
+   *
+   * The scrollbar itself is hidden — phones don't need a visible bar
+   * (overlay scrollbars are the platform default), and the always-on
+   * `overflow-y: scroll` would otherwise draw a permanent thin bar in
+   * Chromium-based mobile emulators. */
+  .list-body,
+  .page-scroll,
+  .chat-messages {
+    overflow-y: scroll;
+    overscroll-behavior: contain;
+    position: relative;
+    scrollbar-width: none;
+  }
+  .list-body::-webkit-scrollbar,
+  .page-scroll::-webkit-scrollbar,
+  .chat-messages::-webkit-scrollbar {
+    display: none;
+  }
+  .list-body::after,
+  .page-scroll::after,
+  .chat-messages::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+  }
+
+  /* Fiction disclaimer at the bottom of the chat list-body. Scrolls
+   * with the list — present when there are few chats, pushed below the
+   * fold once there are many. Desktop has the same text in the chat
+   * content pane's empty state. */
+  .mobile-disclaimer {
+    display: block;
+    margin: 18px 4px 8px;
+    padding: 14px 16px;
+    font-size: 0.857rem;
+    color: var(--text-faint);
+    line-height: 1.45;
+    text-align: center;
+    border-top: 1px solid var(--border);
+  }
+  /* No divider when the list is empty — there's nothing above the
+   * disclaimer to separate from. */
+  .list-empty + .mobile-disclaimer {
+    border-top: none;
+    margin-top: 0;
+  }
+
+  /* Bulk-import picker on phone widths. The header strip stacks
+   * vertically so the search input + bulk dropdown each get the full
+   * row width; the list gives up some height to leave room for the
+   * stacked header + bottom action bar. Child space rows lose their
+   * left indent (the contact's chevron is enough of an anchor) so
+   * long names don't push beyond the row's right edge. */
+  .zip-picker-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .zip-picker-bulk { min-width: 0; }
+  .zip-picker-list { max-height: 50vh; }
+  .zip-picker-row-space {
+    margin-left: 8px;
+  }
+
+  /* Action select wraps to its own line. Without this the avatar +
+   * meta + select all share a single flex row and the meta text
+   * column gets squeezed to a few characters wide. ``flex-basis:
+   * 100%`` forces the wrap; the explicit margin gives a clear
+   * separation from the text above. */
+  .zip-picker-row-main {
+    flex-wrap: wrap;
+  }
+  .zip-picker-row-main > .avatar-picker {
+    flex-basis: 100%;
+    margin-top: 6px;
+  }
+
+  /* Brain activation key row: split into two lines so the pattern input
+   * (the only field that needs width) gets the whole row, with the
+   * regex/case toggles + range input + delete button on a second line. */
+  .brain-key-row {
+    flex-wrap: wrap;
+  }
+  .brain-key-row > input[type="text"] {
+    flex-basis: 100%;
+  }
+  .brain-key-row .brain-key-range {
+    flex: 1 1 auto;
+    min-width: 80px;
+  }
+}

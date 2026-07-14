@@ -1,0 +1,53 @@
+{
+  "chat": {
+    "id": "fixture-chat-namematch-0001",
+    "title": "Chat with namesake",
+    "tags": "fixture,test,namematch",
+    "characterId": "different-alice-id-9999",
+    "userId": "different-bob-id-9999",
+    "scenarioId": null,
+    "intimacy": "stranger",
+    "style": "chat",
+    "responseLength": null,
+    "cjk": false,
+    "selectedChildId": {},
+    "messages": [],
+    "createdAt": 0,
+    "updatedAt": 0
+  },
+  "character": {
+    "id": "different-alice-id-9999",
+    "name": "FixtureAlice",
+    "description": "Same name as contact_alice.json but a different UUID — used to trigger the composite name-match modal.",
+    "gndr": "female",
+    "pronouns": "she/her",
+    "species": "human",
+    "tags": "fixture,test,namematch",
+    "persona": "Different content under a colliding name.",
+    "appearance": "Short red hair, green eyes.",
+    "greeting": "Hi (variant)",
+    "greetingEmotion": "neutral",
+    "exampleMessages": [],
+    "emotions": {},
+    "avatarUri": "",
+    "relationship": "stranger",
+    "responseLength": "unspecified",
+    "style": "chat",
+    "cjk": false,
+    "brains": []
+  },
+  "user": {
+    "id": "different-bob-id-9999",
+    "name": "FixtureBob",
+    "description": "Same name as user_bob.json but a different UUID.",
+    "species": "human",
+    "gender": "male",
+    "pronouns": "he/him",
+    "persona": "Different content under a colliding name.",
+    "appearance": "",
+    "tags": "fixture,test,namematch",
+    "brains": []
+  },
+  "scenario": null,
+  "bookmarks": []
+}

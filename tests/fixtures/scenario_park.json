@@ -1,0 +1,9 @@
+{
+  "id": "fixture-park-scenario-0001",
+  "name": "FixturePark",
+  "description": "Synthetic scenario for UI tests.",
+  "environment": "A small city park, mid-afternoon. Warm light, light breeze.",
+  "scene": "You both happen to be on the same bench.",
+  "tags": "fixture,test,park",
+  "brains": []
+}

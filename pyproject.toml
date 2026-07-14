@@ -1,0 +1,34 @@
+[project]
+name = "aethertavern"
+version = "0.1.0"
+description = "Standalone AetherTavern chat server (single-user, localhost-only)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "httpx[socks]>=0.28",
+    "transformers>=4.46",
+    "tokenizers>=0.20",
+    "python-multipart>=0.0.20",
+    "pydantic>=2.10",
+    "jinja2>=3.1",
+    "curl-cffi>=0.15.0",
+    "pillow>=12.2.0",
+    "regex>=2026.4.4",
+    "msgspec>=0.21.1",
+]
+
+[dependency-groups]
+dev = [
+    "playwright>=1.59.0",
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "pyyaml>=6.0.3",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[tool.uv]
+exclude-newer = "1 weeks"

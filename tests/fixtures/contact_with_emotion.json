@@ -1,0 +1,23 @@
+{
+  "id": "fixture-emonly-contact-0001",
+  "name": "FixtureEmoOnly",
+  "description": "Contact with a neutral emotion sprite but no avatar — exercises the importer's avatar synthesis fallback.",
+  "gndr": "female",
+  "pronouns": "she/her",
+  "species": "human",
+  "tags": "fixture,test,synthesis",
+  "persona": "Just here to drive the avatar-from-emotion import path.",
+  "appearance": "",
+  "greeting": "Hi.",
+  "greetingEmotion": "neutral",
+  "exampleMessages": [],
+  "emotions": {
+    "neutral": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+  },
+  "avatarUri": "",
+  "relationship": "stranger",
+  "responseLength": "unspecified",
+  "style": "chat",
+  "cjk": false,
+  "brains": []
+}

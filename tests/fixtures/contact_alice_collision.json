@@ -1,0 +1,21 @@
+{
+  "id": "fixture-alice-contact-0001",
+  "name": "FixtureAliceVariant",
+  "description": "Same UUID as contact_alice.json — used to trigger the conflict modal.",
+  "gndr": "female",
+  "pronouns": "she/her",
+  "species": "human",
+  "tags": "fixture,test,variant",
+  "persona": "Same id, different content.",
+  "appearance": "Short red hair, green eyes.",
+  "greeting": "Hello again!",
+  "greetingEmotion": "neutral",
+  "exampleMessages": [],
+  "emotions": {},
+  "avatarUri": "",
+  "relationship": "stranger",
+  "responseLength": "unspecified",
+  "style": "chat",
+  "cjk": false,
+  "brains": []
+}

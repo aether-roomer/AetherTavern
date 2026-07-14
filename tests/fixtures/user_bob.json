@@ -1,0 +1,12 @@
+{
+  "id": "fixture-bob-user-0001",
+  "name": "FixtureBob",
+  "description": "Synthetic user persona for UI tests.",
+  "species": "human",
+  "gender": "male",
+  "pronouns": "he/him",
+  "persona": "Laid-back and witty.",
+  "appearance": "Tall, dark hair.",
+  "tags": "fixture,test",
+  "brains": []
+}
