@@ -130,7 +130,10 @@ def atomic_write_bytes(path: Path, data: bytes) -> None:
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
-    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o644)
+    # O_BINARY is Windows-only and 0 elsewhere. Without it Windows opens the
+    # fd in text mode and translates every \n to \r\n on write, corrupting
+    # image bytes (and any other binary payload) as they hit disk.
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0), 0o644)
     try:
         os.write(fd, data)
         os.fsync(fd)
