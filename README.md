@@ -1,5 +1,7 @@
 # AetherTavern
 
+<p align="center"><a href="https://github.com/user-attachments/assets/61b82193-8d71-4bb2-a9aa-c6f1788a30d8"><img width="503" height="305" alt="AetherTavern" src="https://github.com/user-attachments/assets/61b82193-8d71-4bb2-a9aa-c6f1788a30d8" style="border: 0px;" /></a></p>
+
 AetherTavern is your local frontend for chatting with AetherRoom contacts on NovelAI's Xialong model. Think SillyTavern, but for Aether.
 
 It aims to provide a polished experience on both Desktop and Mobile with keyboard shortcuts, intuitive touch controls, a clean layout and overall snappy UI.
