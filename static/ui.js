@@ -1,6 +1,6 @@
 /* UI helpers: icons, modal, toast. */
 
-import { el } from './util.js';
+import { clamp, el, visibleViewport } from './util.js';
 
 /* ====== Icons (Lucide-style SVG) ====== */
 
@@ -108,34 +108,38 @@ export function helpDetails(content, opts = {}) {
 
   function position() {
     const r = btn.getBoundingClientRect();
+    const vp = visibleViewport();
     panel.style.maxHeight = '';   // reset before measuring
     // Match the surrounding font so nested code blocks etc. look right.
     const cs = window.getComputedStyle(btn);
     panel.style.fontFamily = cs.fontFamily;
     // Width: cap at a comfortable reading measure and the viewport.
-    const maxAvail = Math.min(420, window.innerWidth - 16);
+    const maxAvail = Math.min(420, vp.width - 16);
     panel.style.maxWidth = `${maxAvail}px`;
     panel.style.width = 'max-content';
 
     const natural = panel.offsetHeight;
-    const spaceBelow = window.innerHeight - r.bottom - 12;
-    const spaceAbove = r.top - 12;
+    const spaceBelow = vp.top + vp.height - r.bottom - 12;
+    const spaceAbove = r.top - vp.top - 12;
     const placeAbove = natural > spaceBelow && spaceAbove > spaceBelow;
-    if (placeAbove) {
-      const cap = Math.min(natural, spaceAbove);
-      panel.style.maxHeight = `${cap}px`;
-      panel.style.top = `${r.top - cap - 6}px`;
-    } else {
-      const cap = Math.min(natural, spaceBelow);
-      panel.style.maxHeight = `${cap}px`;
-      panel.style.top = `${r.bottom + 6}px`;
-    }
+    const cap = Math.max(80, Math.min(natural, placeAbove ? spaceAbove : spaceBelow));
+    // A clamp on top of the side choice: the anchor can sit outside the
+    // visible box itself (scrolled away, or pushed under the on-screen
+    // keyboard), and placing relative to it would drag the panel out with it.
+    const top = clamp(
+      placeAbove ? r.top - cap - 6 : r.bottom + 6,
+      vp.top + 8,
+      Math.max(vp.top + 8, vp.top + vp.height - cap - 8),
+    );
+    panel.style.maxHeight = `${cap}px`;
+    panel.style.top = `${top}px`;
     // Horizontal: anchor to the button's left, but keep the panel inside
     // the viewport.
     const measured = panel.offsetWidth;
+    const vpRight = vp.left + vp.width;
     let left = r.left;
-    if (left + measured > window.innerWidth - 8) {
-      left = Math.max(8, window.innerWidth - measured - 8);
+    if (left + measured > vpRight - 8) {
+      left = Math.max(vp.left + 8, vpRight - measured - 8);
     }
     panel.style.left = `${left}px`;
   }
@@ -160,6 +164,13 @@ export function helpDetails(content, opts = {}) {
     document.addEventListener('keydown', escHandler);
     window.addEventListener('scroll', scrollHandler, true);
     window.addEventListener('resize', resizeHandler);
+    // iOS fires only the visualViewport events for the on-screen keyboard,
+    // so a panel opened above a form field would keep its pre-keyboard
+    // placement (and can end up behind the keyboard) without these.
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', resizeHandler);
+      window.visualViewport.addEventListener('scroll', resizeHandler);
+    }
   }
   function close() {
     if (!isOpen) return;
@@ -172,6 +183,10 @@ export function helpDetails(content, opts = {}) {
     document.removeEventListener('keydown', escHandler);
     window.removeEventListener('scroll', scrollHandler, true);
     window.removeEventListener('resize', resizeHandler);
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', resizeHandler);
+      window.visualViewport.removeEventListener('scroll', resizeHandler);
+    }
   }
 
   btn.addEventListener('click', (e) => {

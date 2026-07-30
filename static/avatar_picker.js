@@ -25,7 +25,14 @@
  * ``getValue()`` for controlled-component patterns.
  */
 
-import { el } from './util.js';
+import { el, visibleViewport } from './util.js';
+
+
+/* Queried per-open rather than once at module load — a tablet gains a fine
+ * pointer the moment a mouse or trackpad case is attached. */
+function _coarsePointer() {
+  return window.matchMedia('(hover: none)').matches;
+}
 
 
 /* Plain dropdown — no avatars, no favourites. Search is off by default
@@ -175,8 +182,25 @@ export function makeAvatarPicker({
     return svg;
   }
 
+  /* Scroll a row into view by moving ``listEl.scrollTop`` rather than calling
+   * ``scrollIntoView`` — the latter also scrolls every scrollable ancestor,
+   * and a document scroll trips ``_onAnyScroll`` and closes the popover. */
+  function scrollRowIntoView(row, center = false) {
+    if (!row) return;
+    const r = row.getBoundingClientRect();
+    const l = listEl.getBoundingClientRect();
+    if (center) {
+      listEl.scrollTop += (r.top - l.top) - (l.height - r.height) / 2;
+    } else if (r.top < l.top) {
+      listEl.scrollTop += r.top - l.top;
+    } else if (r.bottom > l.bottom) {
+      listEl.scrollTop += r.bottom - l.bottom;
+    }
+  }
+
   function positionPopover() {
     const rect = trigger.getBoundingClientRect();
+    const vp = visibleViewport();
     // Match the trigger's font so option rows in compact contexts (chat-config
     // bar with its 0.857rem font) don't render with a larger 1rem typeface
     // than the dropdown they spawned from.
@@ -189,7 +213,7 @@ export function makeAvatarPicker({
     // gutter) so longer labels don't ellipsis-truncate inside the list.
     popover.style.minWidth = `${rect.width}px`;
     popover.style.width = 'max-content';
-    const maxAvail = Math.max(160, window.innerWidth - rect.left - 16);
+    const maxAvail = Math.max(160, vp.left + vp.width - rect.left - 16);
     popover.style.maxWidth = `${maxAvail}px`;
 
     // Vertical placement: prefer below the trigger; flip above if the popover
@@ -200,8 +224,8 @@ export function makeAvatarPicker({
     const margin = 8;
     popover.style.maxHeight = '';   // reset before measuring
     const naturalHeight = popover.offsetHeight;
-    const spaceBelow = window.innerHeight - rect.bottom - 4 - margin;
-    const spaceAbove = rect.top - 4 - margin;
+    const spaceBelow = vp.top + vp.height - rect.bottom - 4 - margin;
+    const spaceAbove = rect.top - vp.top - 4 - margin;
     if (naturalHeight <= spaceBelow) {
       popover.style.top = `${rect.bottom + 4}px`;
     } else if (naturalHeight <= spaceAbove) {
@@ -210,7 +234,7 @@ export function makeAvatarPicker({
       popover.style.top = `${rect.bottom + 4}px`;
       popover.style.maxHeight = `${Math.max(120, spaceBelow)}px`;
     } else {
-      popover.style.top = `${margin}px`;
+      popover.style.top = `${vp.top + margin}px`;
       popover.style.maxHeight = `${Math.max(120, spaceAbove)}px`;
     }
   }
@@ -231,21 +255,30 @@ export function makeAvatarPicker({
     paintList();
     positionPopover();
     requestAnimationFrame(() => {
-      if (search) search.focus();
+      // Don't grab focus on touch devices: raising the soft keyboard buries
+      // most of the option list, and the list is what the user tapped for.
+      // They can still tap the search field when they want to filter.
+      if (search && !_coarsePointer()) search.focus();
       const row = listEl.querySelector('.avatar-picker-option.kb-active')
         || listEl.querySelector('.avatar-picker-option.selected');
       // ``center`` so a long alphabetical list (e.g. the Generic model
-      // picker) lands with the user's current pick visible — ``nearest``
-      // only nudges enough to bring the row to the closest edge, which
+      // picker) lands with the user's current pick visible — aligning to the
+      // nearest edge only nudges enough to bring the row into view, which
       // for a list opened with the selected row already in the rough
       // middle does nothing visible.
-      if (row) row.scrollIntoView({ block: 'center' });
+      scrollRowIntoView(row, true);
     });
     // Capture-phase scroll listener catches scrolls in any ancestor (modal,
-    // body, …). Resize close avoids reflow drift; in-popover scroll is
-    // explicitly excluded so the options list itself stays scrollable.
+    // body, …); in-popover scroll is explicitly excluded so the options list
+    // itself stays scrollable. Viewport changes reposition rather than close
+    // — on a phone the soft keyboard fires one the moment a search field
+    // takes focus, and closing there makes the picker unusable.
     document.addEventListener('scroll', _onAnyScroll, true);
-    window.addEventListener('resize', close);
+    window.addEventListener('resize', _onViewportChange);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', _onViewportChange);
+      window.visualViewport.addEventListener('scroll', _onViewportChange);
+    }
     document.addEventListener('click', _onDocClick);
     // Capture-phase keydown so Escape closes the picker BEFORE the modal's
     // bubble-phase Escape handler (registered by openModal) sees it. Without
@@ -262,7 +295,11 @@ export function makeAvatarPicker({
     filterText = '';
     if (search) search.value = '';
     document.removeEventListener('scroll', _onAnyScroll, true);
-    window.removeEventListener('resize', close);
+    window.removeEventListener('resize', _onViewportChange);
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', _onViewportChange);
+      window.visualViewport.removeEventListener('scroll', _onViewportChange);
+    }
     document.removeEventListener('click', _onDocClick);
     document.removeEventListener('keydown', _onDocKeydown, true);
   }
@@ -302,14 +339,26 @@ export function makeAvatarPicker({
         _mouseMoved = false;
         setHighlight(match.value);
         const row = listEl.querySelector(`.avatar-picker-option[data-value="${CSS.escape(highlightedValue)}"]`);
-        if (row) row.scrollIntoView({ block: 'nearest' });
+        scrollRowIntoView(row);
       }
     }
   }
 
   function _onAnyScroll(e) {
     if (popover.contains(e.target)) return;
+    // On touch, an ancestor scroll while the search field holds focus is the
+    // browser making room for the soft keyboard, not the user scrolling away
+    // from the picker — follow the trigger rather than closing under them.
+    if (search && _coarsePointer() && document.activeElement === search) {
+      positionPopover();
+      return;
+    }
     close();
+  }
+
+  function _onViewportChange() {
+    if (!isOpen) return;
+    positionPopover();
   }
 
   function _onDocClick(e) {
@@ -343,7 +392,7 @@ export function makeAvatarPicker({
     _mouseMoved = false;
     setHighlight(visible[next].value);
     const row = listEl.querySelector(`.avatar-picker-option[data-value="${CSS.escape(highlightedValue)}"]`);
-    if (row) row.scrollIntoView({ block: 'nearest' });
+    scrollRowIntoView(row);
   }
 
   // In-place class swap so the cursor's resting position over the rebuilt

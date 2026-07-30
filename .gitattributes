@@ -1,0 +1,10 @@
+# cmd.exe mis-parses a multi-line `if ( ... )` block when the batch file has
+# LF-only endings, and the documented Windows install route is "download the
+# GitHub zip", which hands the user exactly what is in the tree. Pin these so a
+# contributor's core.autocrlf cannot quietly strip the CRs on the way in.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# start.sh runs through a shebang, and a CR at the end of that line becomes
+# part of the interpreter path.
+*.sh text eol=lf

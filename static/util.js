@@ -92,6 +92,27 @@ export function shortId(id) {
 
 export function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
 
+/* The region a body-portalled ``position: fixed`` popover has to stay inside,
+ * expressed in the coordinate space ``getBoundingClientRect`` reports (the
+ * layout viewport) so anchor rects and this box are directly comparable.
+ *
+ * On a phone the two viewports diverge: the on-screen keyboard shrinks the
+ * visual viewport, and on iOS it also offsets it, while the layout viewport
+ * that ``window.inner*`` describes stays put. Clamping to ``window.inner*``
+ * there lets a popover settle behind the keyboard. Desktop: the offsets are
+ * 0 and the sizes match ``window.inner*``, so this is a no-op.
+ *
+ * Popovers that reposition themselves should listen on ``visualViewport``
+ * (resize + scroll) as well as ``window`` resize — the keyboard fires only
+ * the former on iOS. */
+export function visibleViewport() {
+  const vv = window.visualViewport;
+  if (!vv) {
+    return { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+  }
+  return { left: vv.offsetLeft, top: vv.offsetTop, width: vv.width, height: vv.height };
+}
+
 export function debounce(fn, ms) {
   let t;
   return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };

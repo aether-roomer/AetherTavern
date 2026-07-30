@@ -1,10 +1,15 @@
 # AetherTavern
 
-<p align="center"><a href="https://github.com/user-attachments/assets/61b82193-8d71-4bb2-a9aa-c6f1788a30d8"><img width="503" height="305" alt="AetherTavern" src="https://github.com/user-attachments/assets/61b82193-8d71-4bb2-a9aa-c6f1788a30d8" style="border: 0px;" /></a></p>
-
 AetherTavern is your local frontend for chatting with AetherRoom contacts on NovelAI's Xialong model. Think SillyTavern, but for Aether.
 
 It aims to provide a polished experience on both Desktop and Mobile with keyboard shortcuts, intuitive touch controls, a clean layout and overall snappy UI.
+
+## Changes
+
+- 07/29/2026
+    - Fixed images being broken on Windows
+    - Fixed dropdown menus and help pop-overs on mobile
+    - Improved installation instructions
 
 ## Features
 
@@ -26,67 +31,65 @@ It aims to provide a polished experience on both Desktop and Mobile with keyboar
 - **Unsafe HTML rendering** - for when you want to get pwned by your model or just really need some charts rendered
 - **More than just roleplay** - you can also use AetherTavern for general interactions with LLMs, not only for roleplay
 
-## Getting started
+## Getting started on Windows
 
-### 1. Install uv
+### 1. Download and unpack
 
-uv ships its own Python toolchain, so installing it is all you need — it
-will fetch a matching Python interpreter on first `uv sync`.
+On the AetherTavern GitHub page, click the green or blue **Code** button and
+choose **Download ZIP**.
 
-**macOS / Linux:**
+Right-click the downloaded file, pick **Extract All…**, and extract it
+somewhere permanent — a folder in your own user directory is ideal, e.g.
+`C:\Users\<you>\AetherTavern`. The unpacked folder *is* the installation:
+your contacts, chats and settings end up in a `data\` folder inside it. So
+don't leave it in Downloads, and don't put it under `Program Files` (Windows
+restricts writes there).
 
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
+The archive contains a single folder, usually named `AetherTavern-master`.
+Open it — everything referred to below sits directly inside, next to
+`README.md`.
 
-**Windows (PowerShell):**
+### 2. Run the installer
+
+Double-click **`install.cmd`**.
+
+A console window opens and does the rest: it installs
+[uv](https://docs.astral.sh/uv/) (Astral's Python toolchain manager, which
+brings its own Python along) unless you already have it, makes it usable
+immediately instead of after a reboot, clears the "downloaded from the
+internet" flag Windows put on the scripts, and fetches AetherTavern's
+dependencies. Give it a few minutes the first time. It ends with `Setup
+complete` and waits for you to press Enter.
+
+**Prefer a terminal — or did `install.cmd` not work?** Open the
+unpacked folder in Explorer, hold **Shift** and right-click an empty spot
+inside it, then choose **Open PowerShell window here** (Windows 10) or
+**Open in Terminal** (Windows 11). In that window, run:
 
 ```powershell
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-Other install methods (Homebrew, winget, pipx, pip) are documented at
-<https://docs.astral.sh/uv/getting-started/installation/>. Restart your
-shell after install so `uv` lands on `PATH`.
-
-### 2. Install dependencies
-
-```bash
-uv sync --locked
-```
-
-This works the same on Linux, macOS, and Windows — uv reads `uv.lock` and
-materialises the virtualenv under `.venv/`, including the Python interpreter.
+The `-ExecutionPolicy Bypass` part is what matters. Windows refuses to run
+PowerShell scripts out of the box, and scripts unpacked from a downloaded zip
+are flagged as internet-sourced on top of that — so plain `.\install.ps1`
+tends to fail with a red *"cannot be loaded because running scripts is
+disabled on this system"*.
 
 ### 3. Start the server
 
-The first time you run the server it will download the GLM-4.6 tokenizer
-from Hugging Face (~5 MB) and cache it.
+Double-click **`start.cmd`**.
 
-**Linux / macOS:**
+Leave the window it opens running — closing it stops AetherTavern. Starting
+it again later is fine: it shuts down the instance it launched previously and
+comes back up cleanly.
 
-```bash
-./start.sh
-```
+Double-clicking `start.ps1` directly won't work — Windows opens `.ps1` files
+in an editor rather than running them. That is what the two `.cmd` files are
+for.
 
-**Windows (PowerShell):**
-
-```powershell
-.\start.ps1
-```
-
-If PowerShell refuses with an execution-policy error, either run
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\start.ps1
-```
-
-or relax the policy for your user once with `Set-ExecutionPolicy
--Scope CurrentUser RemoteSigned`.
-
-Both scripts write a pidfile under `data/`, stop any previous instance
-they launched, and start `uv run uvicorn` in its place — so re-running
-restarts cleanly.
+The first start downloads the GLM-4.6 tokenizer from Hugging Face (~20 MB)
+and caches it, so give it a moment before the page comes up.
 
 ### 4. Open the app and add your API token
 
@@ -94,11 +97,88 @@ Open <http://127.0.0.1:8000> in your browser, head to **Settings**, and
 paste your NovelAI API token. You can find it in your
 [NovelAI account settings](https://docs.novelai.net/en/text/usersettings/account).
 
+## Getting started on macOS / Linux
+
+### 1. Install uv
+
+uv ships its own Python toolchain, so installing it is all you need — it
+will fetch a matching Python interpreter on first `uv sync`.
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Other install methods (Homebrew, pipx, pip) are documented at
+<https://docs.astral.sh/uv/getting-started/installation/>. Restart your
+shell after install so `uv` lands on `PATH`.
+
+### 2. Install dependencies
+
+From the project folder:
+
+```bash
+uv sync --locked
+```
+
+uv reads `uv.lock` and materialises the virtualenv under `.venv/`, including
+the Python interpreter.
+
+### 3. Start the server
+
+```bash
+./start.sh
+```
+
+The first run downloads the GLM-4.6 tokenizer from Hugging Face (~20 MB) and
+caches it.
+
+### 4. Open the app and add your API token
+
+Open <http://127.0.0.1:8000> in your browser, head to **Settings**, and
+paste your NovelAI API token. You can find it in your
+[NovelAI account settings](https://docs.novelai.net/en/text/usersettings/account).
+
+## Setting up Windows by hand
+
+`install.cmd` is a convenience, not a requirement. The equivalent by hand:
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Then **close the terminal and open a new one** — uv's installer extends
+`PATH`, and an already-running terminal keeps the copy it started with, so
+`uv` won't be found until you do. In the new terminal, `cd` to the unpacked
+folder and run `uv sync --locked`, then `.\start.ps1`.
+
+If PowerShell refuses with an execution-policy error, prefix the command as
+`powershell -ExecutionPolicy Bypass -File .\start.ps1` — that applies to the
+one invocation and nothing else.
+
+You *can* instead relax the policy for your account once with
+`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, but be aware of what
+that buys: it applies to every PowerShell script your account runs from then
+on, not just this project's, which is why AetherTavern's installer won't do
+it for you. It also isn't sufficient on its own for files out of a downloaded
+zip — those are flagged as internet-sourced and additionally need
+`Get-ChildItem *.ps1 | Unblock-File`.
+
+Both `start.sh` and `start.ps1` write a pidfile under `data/`, stop any
+previous instance they launched, and start the server in its place — so
+re-running restarts cleanly. Before signalling anything they check that the
+recorded pid still belongs to the launcher they started, so a pidfile left
+behind by a power cut can't take an unrelated process down with it.
+
+`install.ps1` and `start.ps1` both read `windows-common.ps1` from the same
+folder — it holds the uv lookup they share. All three need to be extracted
+together.
+
 ## Notes
 
 - AetherTavern listens on `127.0.0.1` only — it is single-user and not designed for remote access.
 - Your data lives in `data/` (gitignored). Back it up yourself.
 - Override `AETHER_HOST`, `AETHER_PORT`, or `AETHER_DATA_DIR` in the environment if you want to listen elsewhere or keep state in a different directory.
+- `start.sh`, `start.cmd` and `start.ps1` forward any extra arguments to the server launcher, so `start.cmd --port 9001 --no-evade-used-port` works. A flag passed that way wins over the environment variables above.
 - If the chosen port is already bound (another local service, a leftover process), the launcher counts up to find a free one and prints e.g. `Port 8000 is in use; falling back to port 8001.` Pass `--no-evade-used-port` to the launcher (`uv run python -m server --no-evade-used-port`) to disable that and fail loudly instead. To pass arbitrary uvicorn flags, invoke uvicorn directly: `uv run uvicorn server.main:app --host 127.0.0.1 --port 8000 --log-level debug`.
 
 ## Formatting cheat sheet

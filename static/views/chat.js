@@ -2,7 +2,7 @@
 
 import { api, startGenerationStream } from '../api.js';
 import { state, setState, subscribe, setChatInMap } from '../state.js';
-import { el, escapeHtml, formatRelative, slugify, userAvatarEl, avatarEl, scenarioAvatarEl, placeholderAvatar, getChatById } from '../util.js';
+import { el, escapeHtml, formatRelative, slugify, userAvatarEl, avatarEl, scenarioAvatarEl, placeholderAvatar, getChatById, visibleViewport } from '../util.js';
 import { icon, openModal, closeModal, confirmModal, toast } from '../ui.js';
 import { renderBubble } from '../aer_render.js';
 import { renderGenericBubble, hasVisibleGenericContent } from '../render.js';
@@ -3282,13 +3282,17 @@ function positionMenu(panel, anchorBtn) {
   void panel.offsetWidth;
   const w = panel.offsetWidth;
   const h = panel.offsetHeight;
+  // Clamp to the visible box rather than the layout viewport: this panel is
+  // anchored to the chat input bar, which is exactly where the on-screen
+  // keyboard is.
+  const vp = visibleViewport();
   let left = rect.left;
-  if (left + w + margin > window.innerWidth) {
-    left = window.innerWidth - w - margin;
+  if (left + w + margin > vp.left + vp.width) {
+    left = vp.left + vp.width - w - margin;
   }
-  if (left < margin) left = margin;
+  if (left < vp.left + margin) left = vp.left + margin;
   let top = rect.top - h - 6;
-  if (top < margin) top = rect.bottom + 6;
+  if (top < vp.top + margin) top = rect.bottom + 6;
   panel.style.left = `${Math.round(left)}px`;
   panel.style.top = `${Math.round(top)}px`;
   panel.style.visibility = 'visible';

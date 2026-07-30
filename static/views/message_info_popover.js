@@ -8,7 +8,7 @@
  * closes any existing instance. Outside-click and ``Escape`` dismiss.
  * Lighter than the modal system — no backdrop, no focus trap.
  */
-import { el, formatRelative } from '../util.js';
+import { el, formatRelative, visibleViewport } from '../util.js';
 import { state } from '../state.js';
 import { icon } from '../ui.js';
 import { PROVIDER_LABELS } from '../model_sources.js';
@@ -156,25 +156,29 @@ function positionPopover(popoverEl, anchorRect) {
   const margin = 8;
   const popHeight = popoverEl.offsetHeight;
   const popWidth = popoverEl.offsetWidth;
-  const vpW = window.innerWidth;
-  const vpH = window.innerHeight;
+  // The visible box, not the layout viewport — on a phone the on-screen
+  // keyboard shrinks (and on iOS offsets) the former, and a bubble's
+  // popover clamped to the latter can land behind the keyboard.
+  const vp = visibleViewport();
+  const vpRight = vp.left + vp.width;
+  const vpBottom = vp.top + vp.height;
 
   // Horizontal: align left edge with anchor, then clamp.
   let left = anchorRect.left;
-  if (left + popWidth + margin > vpW) {
-    left = vpW - popWidth - margin;
+  if (left + popWidth + margin > vpRight) {
+    left = vpRight - popWidth - margin;
   }
-  if (left < margin) left = margin;
+  if (left < vp.left + margin) left = vp.left + margin;
 
   // Vertical: prefer above.
   let top = anchorRect.top - popHeight - 6;
-  if (top < margin) {
+  if (top < vp.top + margin) {
     top = anchorRect.bottom + 6;
   }
-  if (top + popHeight + margin > vpH) {
-    top = vpH - popHeight - margin;
+  if (top + popHeight + margin > vpBottom) {
+    top = vpBottom - popHeight - margin;
   }
-  if (top < margin) top = margin;
+  if (top < vp.top + margin) top = vp.top + margin;
 
   popoverEl.style.left = `${Math.round(left)}px`;
   popoverEl.style.top = `${Math.round(top)}px`;

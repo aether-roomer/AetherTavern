@@ -6114,3 +6114,103 @@ def test_menu_popover_closes_on_escape_and_outside_click(page: Page, clean_state
         "() => !document.querySelector('.chat-input-menu-panel')",
         timeout=2000,
     )
+
+
+def test_picker_popover_survives_soft_keyboard_on_mobile(browser, clean_state):
+    """A dropdown inside a modal must not vanish when the on-screen keyboard
+    appears. Chrome on Android shrinks the layout viewport for the keyboard,
+    which fires ``window.resize``; the picker has to reposition itself into
+    the space that's left instead of closing. Autofocusing the search field
+    (which raises that keyboard the instant the popover opens) is also off on
+    touch, so the option list is what the user actually gets to see."""
+    for name in ("KbAlpha", "KbBravo", "KbCharlie", "KbDelta", "KbEcho"):
+        _api_create_contact(name)
+    ctx = browser.new_context(
+        viewport={"width": 390, "height": 844},
+        is_mobile=True, has_touch=True, device_scale_factor=2.0,
+    )
+    try:
+        page = ctx.new_page()
+        page.goto(base_url())
+        page.wait_for_selector("#rail")
+        page.click('.rail-btn[data-tab="chats"]')
+        page.click('[title="New chat"]')
+        page.wait_for_selector(".modal .avatar-picker-trigger", timeout=5000)
+
+        trigger = page.locator(".modal .avatar-picker-trigger").first
+        trigger.tap()
+        page.wait_for_selector("body > .avatar-picker-popover", timeout=2000)
+        page.wait_for_timeout(250)   # let the post-open rAF settle
+        assert page.evaluate(
+            "document.activeElement.classList.contains('avatar-picker-search')"
+        ) is False, "search field must not autofocus on touch (raises the keyboard)"
+
+        # The keyboard comes up: Android shrinks the layout viewport.
+        page.set_viewport_size({"width": 390, "height": 420})
+        page.wait_for_timeout(250)
+        pop = page.locator("body > .avatar-picker-popover")
+        assert pop.count() == 1, "popover closed itself when the keyboard opened"
+        box = pop.first.bounding_box()
+        assert box["y"] >= 0 and box["y"] + box["height"] <= 420, (
+            f"popover not repositioned into the visible area: {box}"
+        )
+
+        # Still usable: tapping an option selects it.
+        page.locator(
+            "body > .avatar-picker-popover .avatar-picker-option", has_text="KbDelta"
+        ).first.tap()
+        page.wait_for_timeout(200)
+        assert "KbDelta" in trigger.inner_text()
+        assert page.locator("body > .avatar-picker-popover").count() == 0
+    finally:
+        ctx.close()
+
+
+def test_picker_popover_still_closes_on_ancestor_scroll(page: Page, clean_state):
+    """The repositioning added for the soft keyboard must not cost the
+    desktop behaviour: scrolling the modal behind an open picker closes it."""
+    _api_create_contact("ScrollCloseAlice")
+    page.goto(base_url())
+    page.wait_for_selector("#rail")
+    page.click('.rail-btn[data-tab="chats"]')
+    page.click('[title="New chat"]')
+    page.wait_for_selector(".modal .avatar-picker-trigger", timeout=5000)
+    page.locator(".modal .avatar-picker-trigger").first.click()
+    page.wait_for_selector("body > .avatar-picker-popover", timeout=2000)
+    page.evaluate("document.querySelector('.modal').dispatchEvent(new Event('scroll'))")
+    page.wait_for_function(
+        "() => !document.querySelector('body > .avatar-picker-popover')",
+        timeout=2000,
+    )
+
+
+def test_help_popover_stays_in_visible_area_on_mobile(browser):
+    """The (?) panel is body-portalled and fixed-positioned, so it has to be
+    clamped to the *visible* box, not the layout viewport: when the on-screen
+    keyboard shrinks the former, its anchor can end up off-screen and a panel
+    placed relative to that anchor would hang past the bottom edge."""
+    ctx = browser.new_context(
+        viewport={"width": 390, "height": 844},
+        is_mobile=True, has_touch=True, device_scale_factor=2.0,
+    )
+    try:
+        page = ctx.new_page()
+        page.goto(base_url())
+        page.wait_for_selector("#rail")
+        page.click('.rail-btn[data-tab="settings"]')
+        page.wait_for_selector(".help-btn", timeout=5000)
+        btn = page.locator(".help-btn").first
+        btn.scroll_into_view_if_needed()
+        btn.tap()
+        page.wait_for_selector("body > .help-popover", timeout=2000)
+
+        page.set_viewport_size({"width": 390, "height": 420})
+        page.wait_for_timeout(300)
+        panel = page.locator("body > .help-popover")
+        assert panel.count() == 1, "help panel closed itself on the viewport shrink"
+        box = panel.first.bounding_box()
+        assert box["y"] >= 0 and box["y"] + box["height"] <= 421, (
+            f"help panel outside the visible area: {box}"
+        )
+    finally:
+        ctx.close()
