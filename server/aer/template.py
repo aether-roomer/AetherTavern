@@ -44,9 +44,8 @@ def render(
     # For assistant messages it's a no-op against the chat template (which
     # already strips assistant content) but matches the AER format contract.
     prepared = [{**m, "content": m["content"].strip()} for m in messages]
-    text = tok.apply_chat_template(
+    text = tok.render_chat(
         prepared,
-        tokenize=False,
         add_generation_prompt=False if continue_mode else add_generation_prompt,
         enable_thinking=False,
     )
@@ -75,7 +74,7 @@ def render(
 def count_tokens(text: str) -> int:
     """Return the number of tokens in ``text`` (no special tokens added — already in template)."""
     tok = get_tokenizer()
-    return len(tok.encode(text, add_special_tokens=False))
+    return tok.count(text)
 
 
 def render_and_count(

@@ -30,7 +30,7 @@ log = logging.getLogger("aether.proxy_rules")
 
 
 KNOWN_CATEGORIES: frozenset[str] = frozenset(
-    {"aetherroom", "tts", "image-import", "generic_llm"}
+    {"aetherroom", "tts", "image-import", "generic_llm", "tokenizer"}
 )
 KNOWN_PROXY_SCHEMES: frozenset[str] = frozenset(
     {"http", "https", "socks5", "socks5h", "socks4", "socks4a"}
@@ -295,8 +295,8 @@ def make_async_client(category: str, **kwargs) -> httpx.AsyncClient:
     honours environment proxy settings and goes DIRECT otherwise.
 
     When rules ARE in scope, sets ``trust_env=False`` so a user-set
-    ``HTTPS_PROXY`` (e.g. for the HF tokenizer download at boot) does
-    not bleed into application traffic.
+    ``HTTPS_PROXY`` does not bleed into application traffic — the rules
+    file is the only thing that decides where a request goes.
     """
     rules = current_proxy_rules()
     if rules is None:

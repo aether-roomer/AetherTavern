@@ -19,10 +19,9 @@ dependencies = [
     { name = "pillow" },
     { name = "pydantic" },
     { name = "python-multipart" },
+    { name = "pyyaml" },
     { name = "regex" },
-    { name = "tokenizers" },
-    { name = "transformers" },
-    { name = "uvicorn", extra = ["standard"] },
+    { name = "uvicorn" },
 ]
 
 [package.dev-dependencies]
@@ -30,7 +29,11 @@ dev = [
     { name = "playwright" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
-    { name = "pyyaml" },
+    { name = "uvicorn", extra = ["standard"] },
+]
+tokenizer-parity = [
+    { name = "tokenizers" },
+    { name = "transformers" },
 ]
 
 [package.metadata]
@@ -43,10 +46,9 @@ requires-dist = [
     { name = "pillow", specifier = ">=12.2.0" },
     { name = "pydantic", specifier = ">=2.10" },
     { name = "python-multipart", specifier = ">=0.0.20" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "regex", specifier = ">=2026.4.4" },
-    { name = "tokenizers", specifier = ">=0.20" },
-    { name = "transformers", specifier = ">=4.46" },
-    { name = "uvicorn", extras = ["standard"], specifier = ">=0.32" },
+    { name = "uvicorn", specifier = ">=0.32" },
 ]
 
 [package.metadata.requires-dev]
@@ -54,7 +56,11 @@ dev = [
     { name = "playwright", specifier = ">=1.59.0" },
     { name = "pytest", specifier = ">=8.3" },
     { name = "pytest-asyncio", specifier = ">=0.24" },
-    { name = "pyyaml", specifier = ">=6.0.3" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.32" },
+]
+tokenizer-parity = [
+    { name = "tokenizers", specifier = ">=0.20" },
+    { name = "transformers", specifier = ">=4.46" },
 ]
 
 [[package]]

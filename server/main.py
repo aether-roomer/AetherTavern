@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from server import storage
 from server.aer.tokenizer import load_tokenizer
 from server.discovery_cache import DiscoveryCache
-from server.proxy_rules import ProxyRules
+from server.proxy_rules import ProxyRules, proxy_rules_scope
 from server.routers import (
     brain_libraries,
     chats,
@@ -69,9 +69,17 @@ def _load_proxy_rules() -> ProxyRules | None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     storage.initialize()
-    if os.environ.get("AETHER_SKIP_TOKENIZER") != "1":
-        load_tokenizer()
     app.state.proxy_rules = _load_proxy_rules()
+    if os.environ.get("AETHER_SKIP_TOKENIZER") != "1":
+        # First run downloads ~20 MB. A failure here is not fatal: the UI is
+        # fully usable without a tokenizer, and booting anyway lets an
+        # offline user reach it and copy the files in by hand. Generation
+        # re-raises through get_tokenizer() with the same message.
+        with proxy_rules_scope(app.state.proxy_rules):
+            try:
+                load_tokenizer()
+            except Exception as e:
+                log.error("Tokenizer unavailable — generation will fail: %s", e)
     app.state.discovery_cache = DiscoveryCache()
     yield
 

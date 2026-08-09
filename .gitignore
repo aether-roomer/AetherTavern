@@ -11,6 +11,9 @@ htmlcov/
 # runtime user data — never committed
 data/
 
+# downloaded-once tokenizer files shared by the test suite
+tests/.tokenizer-cache/
+
 # editor
 .idea
 .idea/

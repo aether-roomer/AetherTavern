@@ -1,7 +1,18 @@
 """Shared fixtures: per-test isolated storage rooted under ``tmp_path``."""
 from __future__ import annotations
 
+import os
+from pathlib import Path
+
 import pytest
+
+# The tokenizer caches its ~20 MB of files under the data dir, and
+# ``tmp_storage`` hands every test a throwaway one. Pin the cache outside
+# it so the suite downloads once ever instead of once per run. Set before
+# any test imports ``server.aer.tokenizer``.
+os.environ.setdefault(
+    "AETHER_TOKENIZER_DIR", str(Path(__file__).parent / ".tokenizer-cache")
+)
 
 from server import storage
 from server.discovery_cache import DiscoveryCache

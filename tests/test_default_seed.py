@@ -26,11 +26,26 @@ from server.models import (
 # ---------------------------------------------------------------------------
 
 
-def test_first_boot_seeds_one_default(tmp_storage):
-    ps = storage.list_context_presets()
-    assert len(ps) == 1
-    p = ps[0]
-    assert p.name == "Default"
+def _seeded(name: str):
+    """The seeded preset called ``name``.
+
+    By name, not by index: ``list_context_presets`` returns the index dict's
+    values, so position only reflects the order ``initialize`` happened to
+    save them in.
+    """
+    match = [p for p in storage.list_context_presets() if p.name == name]
+    assert len(match) == 1, f"expected exactly one {name!r} preset, got {len(match)}"
+    return match[0]
+
+
+def test_first_boot_seeds_default_and_assistant(tmp_storage):
+    assert sorted(p.name for p in storage.list_context_presets()) == [
+        "Assistant", "Default",
+    ]
+
+
+def test_first_boot_seeds_the_default_preset(tmp_storage):
+    p = _seeded("Default")
     assert len(p.system_prompt_blocks) == 6
     assert [b.name for b in p.system_prompt_blocks] == [
         "Intro", "Character", "User", "Scenario", "Lore", "HTML output",
@@ -47,8 +62,17 @@ def test_first_boot_seeds_one_default(tmp_storage):
     assert msg.float_depth == 0
 
 
+def test_first_boot_seeds_the_assistant_preset(tmp_storage):
+    p = _seeded("Assistant")
+    assert [b.name for b in p.system_prompt_blocks] == ["System", "HTML output"]
+    assert p.additional_messages == []
+
+
 def test_seed_backfills_provider_context_preset_ids(tmp_storage):
-    p = storage.list_context_presets()[0]
+    """The backfill points at "Default", not at whichever preset was saved
+    first — swapping the seed order must not silently repoint every
+    provider at "Assistant"."""
+    p = _seeded("Default")
     s = storage.load_settings()
     assert s.generic.novelai.context_preset_id == p.id
     assert s.generic.openrouter.context_preset_id == p.id
@@ -88,7 +112,7 @@ def _chat(**kwargs):
 
 
 def test_seed_renders_full_fields_verbatim(tmp_storage):
-    p = storage.list_context_presets()[0]
+    p = _seeded("Default")
     c = Contact(
         name="NAME", species="SPECIES", pronouns="PRONOUNS",
         persona="PERSONA", appearance="APPEARANCE", tags="TAGS",
@@ -161,7 +185,7 @@ def test_seed_renders_full_fields_verbatim(tmp_storage):
 def test_seed_html_output_block_gated_on_sanitize(tmp_storage):
     """The HTML-output block stays out of the prompt while Sanitize HTML is on
     (the default) and appears as the final section only when it's off."""
-    p = storage.list_context_presets()[0]
+    p = _seeded("Default")
     c = Contact(name="NAME")
     u = User(name="UNAME")
     chat = _chat()
@@ -188,7 +212,7 @@ def test_seed_html_output_block_gated_on_sanitize(tmp_storage):
 
 
 def test_seed_contact_name_only(tmp_storage):
-    p = storage.list_context_presets()[0]
+    p = _seeded("Default")
     c = Contact(name="NAME")
     u = User(name="UNAME")
     out = render_system_prompt(p, _ctx(c, u, chat=_chat()))
@@ -199,7 +223,7 @@ def test_seed_contact_name_only(tmp_storage):
 
 
 def test_seed_contact_name_and_tags(tmp_storage):
-    p = storage.list_context_presets()[0]
+    p = _seeded("Default")
     c = Contact(name="NAME", tags="TAGS")
     u = User(name="UNAME")
     out = render_system_prompt(p, _ctx(c, u, chat=_chat()))
@@ -209,7 +233,7 @@ def test_seed_contact_name_and_tags(tmp_storage):
 
 
 def test_seed_contact_persona_then_tags_has_blank_above_tags(tmp_storage):
-    p = storage.list_context_presets()[0]
+    p = _seeded("Default")
     c = Contact(name="NAME", persona="PERSONA", tags="TAGS")
     u = User(name="UNAME")
     out = render_system_prompt(p, _ctx(c, u, chat=_chat()))
@@ -219,7 +243,7 @@ def test_seed_contact_persona_then_tags_has_blank_above_tags(tmp_storage):
 
 
 def test_seed_scenario_scene_only(tmp_storage):
-    p = storage.list_context_presets()[0]
+    p = _seeded("Default")
     c = Contact(name="NAME")
     u = User(name="UNAME")
     s = Scenario(name="S", environment="", scene="SCENE")
@@ -228,7 +252,7 @@ def test_seed_scenario_scene_only(tmp_storage):
 
 
 def test_seed_scenario_env_and_chat_tags_no_orphan_scene(tmp_storage):
-    p = storage.list_context_presets()[0]
+    p = _seeded("Default")
     c = Contact(name="NAME")
     u = User(name="UNAME")
     s = Scenario(name="S", environment="ENV", scene="")
@@ -238,7 +262,7 @@ def test_seed_scenario_env_and_chat_tags_no_orphan_scene(tmp_storage):
 
 
 def test_seed_scenario_all_empty_section_vanishes(tmp_storage):
-    p = storage.list_context_presets()[0]
+    p = _seeded("Default")
     c = Contact(name="NAME")
     u = User(name="UNAME")
     out = render_system_prompt(p, _ctx(c, u, chat=_chat()))
@@ -246,7 +270,7 @@ def test_seed_scenario_all_empty_section_vanishes(tmp_storage):
 
 
 def test_seed_lore_vanishes_without_global_brains(tmp_storage):
-    p = storage.list_context_presets()[0]
+    p = _seeded("Default")
     c = Contact(name="NAME")
     u = User(name="UNAME")
     out = render_system_prompt(p, _ctx(c, u, chat=_chat()))
@@ -255,7 +279,7 @@ def test_seed_lore_vanishes_without_global_brains(tmp_storage):
 
 
 def test_seed_prefill_renders_contact_name(tmp_storage):
-    p = storage.list_context_presets()[0]
+    p = _seeded("Default")
     c = Contact(name="Alice")
     u = User(name="Bob")
     msgs = render_additional_messages(p, _ctx(c, u, chat=_chat()))

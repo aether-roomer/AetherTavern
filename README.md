@@ -91,7 +91,7 @@ in an editor rather than running them. That is what the two `.cmd` files are
 for.
 
 The first start downloads the GLM-4.6 tokenizer from Hugging Face (~20 MB)
-and caches it, so give it a moment before the page comes up.
+into `data\tokenizer\`, so give it a moment before the page comes up.
 
 ### 4. Open the app and add your API token
 
@@ -131,14 +131,41 @@ the Python interpreter.
 ./start.sh
 ```
 
-The first run downloads the GLM-4.6 tokenizer from Hugging Face (~20 MB) and
-caches it.
+The first run downloads the GLM-4.6 tokenizer from Hugging Face (~20 MB) into
+`data/tokenizer/`.
+
+If that machine has no internet access, copy `tokenizer.json` and
+`chat_template.jinja` from
+[the GLM-4.6 repo](https://huggingface.co/zai-org/GLM-4.6/tree/main) into
+`data/tokenizer/zai-org--GLM-4.6/` by hand. The server starts either way and
+tells you the exact path it wanted; only generation needs the tokenizer.
 
 ### 4. Open the app and add your API token
 
 Open <http://127.0.0.1:8000> in your browser, head to **Settings**, and
 paste your NovelAI API token. You can find it in your
 [NovelAI account settings](https://docs.novelai.net/en/text/usersettings/account).
+
+## Android (Termux)
+
+Not a platform this project tests on, but it does work. The notes below come
+from users who have done it.
+
+Termux isn't manylinux, so PyPI's prebuilt wheels don't apply and anything
+with a native extension is compiled on the spot. **You need a Rust toolchain
+and a C compiler before `uv sync`:**
+
+```bash
+pkg install rust clang binutils
+```
+
+Rust is for `pydantic-core`, which has no pure-Python alternative — pydantic
+is load-bearing throughout the app. The C compiler covers `msgspec`,
+`regex`, `cffi` and `pillow`.
+
+**If installation dies partway through with no useful error**, Android is
+killing the compiler as a background process. Enable Developer options, then
+turn on **Disable child process restrictions**.
 
 ## Setting up Windows by hand
 
@@ -462,7 +489,21 @@ uv run uvicorn server.main:app --host 127.0.0.1 --port 8000
 
 ### Tests
 
-AetherTavern comes with a suite of tests. You can run them like this:
+`uv sync` installs only what the server needs at runtime. The test tooling
+lives in dependency groups:
+
+```bash
+uv sync --group dev                        # pytest + playwright
+uv sync --group dev --group tokenizer-parity   # ...plus the reference tokenizer
+```
+
+`tokenizer-parity` pulls in `transformers` and the Rust `tokenizers`
+extension, which `tests/test_bpe.py` checks our pure-Python encoder against.
+It is a separate group because that tree needs a compiler toolchain to build
+on platforms without prebuilt wheels; the parity tests skip when it is
+absent and the rest of `test_bpe.py` still runs.
+
+Then:
 
 ```bash
 uv run pytest
@@ -479,7 +520,7 @@ AETHER_SKIP_TOKENIZER=1 uv run pytest --ignore=tests/test_ui.py
 isolated `uvicorn` on a free port with a temporary `AETHER_DATA_DIR`, so
 running it doesn't touch the data directory of your real instance.
 
-`uv sync` installs the Playwright Python package, but the chromium
+The Playwright Python package comes with the `dev` group, but the chromium
 binary it drives is a separate download. Grab it once with:
 
 ```bash
