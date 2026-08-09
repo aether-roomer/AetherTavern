@@ -6,6 +6,12 @@ AetherTavern is your local frontend for chatting with AetherRoom contacts on Nov
 
 It aims to provide a polished experience on both Desktop and Mobile with keyboard shortcuts, intuitive touch controls, a clean layout and overall snappy UI.
 
+## FAQ
+
+Q: Why do I see "Emotion:" lines in my chat messages?
+
+A: You probably have the provider tab at the top of the settings page set "Generic". Please switch it to AetherRoom, and all AetherRoom related processing should work properly.
+
 ## Changes
 
 - 08/09/2026
