@@ -8,6 +8,9 @@ It aims to provide a polished experience on both Desktop and Mobile with keyboar
 
 ## Changes
 
+- 08/09/2026
+    - Removed unnecessary dependencies for user installs
+    - Added Android section to README.md
 - 07/29/2026
     - Fixed images being broken on Windows
     - Fixed dropdown menus and help pop-overs on mobile
