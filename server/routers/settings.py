@@ -10,6 +10,7 @@ from server import storage
 from server.models import (
     GenericProviderKind,
     GenericSettings,
+    ImageGenerationSettings,
     LLMBrainMessageRole,
     NovelAIVoiceVersion,
     Settings,
@@ -141,6 +142,7 @@ class SettingsView(BaseModel):
     sanitize_generic_html: bool
     compress_images: bool
     image_compression_quality: int
+    image_generation: ImageGenerationSettings
     tts: TTSSettingsView
     notify_on_complete: bool
     notification_sound: str | None
@@ -174,6 +176,7 @@ class SettingsUpdate(BaseModel):
     sanitize_generic_html: bool | None = None
     compress_images: bool | None = None
     image_compression_quality: int | None = Field(default=None, ge=1, le=100)
+    image_generation: ImageGenerationSettings | None = None
     tts: TTSSettings | None = None
     notify_on_complete: bool | None = None
     # notification_sound is a server-managed filename — set via the
@@ -332,6 +335,7 @@ def _to_view(s: Settings) -> SettingsView:
         sanitize_generic_html=s.sanitize_generic_html,
         compress_images=s.compress_images,
         image_compression_quality=s.image_compression_quality,
+        image_generation=s.image_generation,
         tts=_to_tts_view(s.tts),
         notify_on_complete=s.notify_on_complete,
         notification_sound=s.notification_sound,
@@ -365,6 +369,10 @@ async def put_settings(update: SettingsUpdate) -> SettingsView:
             # update.tts is the validated Pydantic instance; mutate
             # its secrets, then assign.
             current.tts = _merge_tts_secrets(update.tts, current.tts)
+
+        if "image_generation" in payload:
+            payload.pop("image_generation")
+            current.image_generation = update.image_generation
 
         # ``max_bubble_width_em`` is nullable, and ``None`` is a real value the
         # user sets (slider to the "unlimited" tick) — not just "preserve". So

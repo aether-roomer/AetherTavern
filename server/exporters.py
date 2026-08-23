@@ -544,6 +544,9 @@ def _message_to_aer(msg: ChatMessage, chat_id: str | None = None) -> dict:
                     "mime": att.mime,
                     "filename": att.filename,
                     "byteSize": att.byte_size,
+                    "source": att.source,
+                    "prompt": att.prompt,
+                    "seed": att.seed,
                     "dataUri": f"data:{att.mime};base64,"
                                + base64.b64encode(payload).decode("ascii"),
                 })

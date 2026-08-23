@@ -23,6 +23,7 @@ from server.routers import (
     generate,
     generic as generic_router,
     import_export,
+    image_generation,
     presets,
     scenarios,
     settings as settings_router,
@@ -99,6 +100,7 @@ app.include_router(generate.router)
 app.include_router(generate.contacts_router)
 app.include_router(files.router)
 app.include_router(import_export.router)
+app.include_router(image_generation.router)
 app.include_router(tts.router)
 app.include_router(generic_router.router)
 

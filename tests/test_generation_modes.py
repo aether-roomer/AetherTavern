@@ -126,6 +126,66 @@ def test_context_tokens_uses_generic_builder_when_provider_mode_generic(tmp_stor
         assert isinstance(body["total_tokens"], int)
         assert body["total_tokens"] >= 0
 
+        preview = client.get(f"/api/chats/{chat_id}/context-preview")
+        assert preview.status_code == 200, preview.text
+        preview_body = preview.json()
+        assert preview_body["provider_mode"] == "generic"
+        assert preview_body["transport"] == "chat_completions"
+        assert preview_body["prompt"] is None
+        assert isinstance(preview_body["messages"], list)
+        assert preview_body["messages"]
+
+
+def test_context_preview_aer_is_exact_local_preflight(tmp_storage, monkeypatch):
+    """The preview renders AER's final raw prompt, including its speaker
+    seed, without opening an inference stream or changing chat state."""
+    called = False
+
+    async def forbidden_stream(**_kwargs):
+        nonlocal called
+        called = True
+        yield "must not run"
+
+    monkeypatch.setattr(
+        "server.routers.generate.stream_completion", forbidden_stream,
+    )
+    with TestClient(app) as client:
+        contact = client.post("/api/contacts", json={"name": "Alice"}).json()
+        user = client.post("/api/users", json={"name": "Me"}).json()
+        chat = client.post("/api/chats", json={
+            "contact_id": contact["id"], "user_id": user["id"], "title": "T",
+        }).json()
+        chat_id = chat["id"]
+        client.post(
+            f"/api/chats/{chat_id}/messages",
+            json={"sender": "user", "body": [{"text": "Stay here."}]},
+        )
+        before_chat = client.get(f"/api/chats/{chat_id}").json()
+        before_messages = client.get(f"/api/chats/{chat_id}/messages").json()
+
+        response = client.get(f"/api/chats/{chat_id}/context-preview")
+        assert response.status_code == 200, response.text
+        body = response.json()
+        assert body["provider_mode"] == "aetherroom"
+        assert body["transport"] == "raw_completion"
+        assert body["generation_mode"] == "normal"
+        assert body["messages"] is None
+        assert body["prompt"].startswith("[gMASK]<sop><|system|>")
+        assert "<|user|>" in body["prompt"]
+        assert "Stay here." in body["prompt"]
+        assert body["prompt"].endswith("Alice:")
+        assert body["input_tokens"] > 0
+        assert body["token_count_kind"] == "exact"
+
+        impersonate = client.get(
+            f"/api/chats/{chat_id}/context-preview?mode=impersonate"
+        )
+        assert impersonate.status_code == 200, impersonate.text
+        assert impersonate.json()["prompt"].endswith("Me:")
+        assert called is False
+        assert client.get(f"/api/chats/{chat_id}").json() == before_chat
+        assert client.get(f"/api/chats/{chat_id}/messages").json() == before_messages
+
 
 def test_continue_persists_as_sibling_with_seed(tmp_storage, monkeypatch):
     """Continue mode: new ChatMessage is a sibling of the contact tip,

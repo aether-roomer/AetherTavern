@@ -1,11 +1,12 @@
 /* Shared enum values (keep in sync with server/models.py). */
 
-// The 9 themes shown in the Settings picker (3x3 grid).
+// Themes shown in the Settings picker.
 // `toggleable` themes are the pair the toolbar sun/moon button flips between;
 // any other selection hides that toggle until the user picks one of them again.
 export const THEMES = [
   { id: 'light',     name: 'Light',     toggleable: true  },
   { id: 'dark',      name: 'Dark',      toggleable: true  },
+  { id: 'oled',      name: 'OLED',      toggleable: false },
   { id: 'sepia',     name: 'Sepia',     toggleable: false },
   { id: 'noir',      name: 'Noir',      toggleable: false },
   { id: 'pastel',    name: 'Pastel',    toggleable: false },

@@ -65,6 +65,8 @@ export const api = {
     uploadFile(`/api/chats/${chatId}/attachments`, file),
   deleteChatAttachment: (chatId, attId) =>
     request('DELETE', `/api/chats/${chatId}/attachments/${attId}`),
+  deleteMessageAttachment: (chatId, messageId, attId) =>
+    request('DELETE', `/api/chats/${chatId}/messages/${messageId}/attachments/${attId}`),
   // presets
   listPresets: () => request('GET', '/api/presets'),
   createPreset: (p) => request('POST', '/api/presets', p),
@@ -188,8 +190,30 @@ export const api = {
     if (opts.mode && opts.mode !== 'normal') params.set('mode', opts.mode);
     return request('GET', `/api/chats/${id}/context-tokens?${params}`);
   },
+  chatContextPreview: (id, mode = 'normal') => {
+    const params = new URLSearchParams();
+    params.set('is_mobile', _isMobile());
+    if (mode && mode !== 'normal') params.set('mode', mode);
+    return request('GET', `/api/chats/${id}/context-preview?${params}`);
+  },
   rerollPicks: (id) => request('POST', `/api/chats/${id}/reroll-picks`),
   chatUsesPickMacro: (id) => request('GET', `/api/chats/${id}/uses-pick-macro`),
+  imagePromptPreview: (chatId, continuing = false, anchorMessageId = null) => {
+    const params = new URLSearchParams();
+    if (continuing) params.set('continue', 'true');
+    if (anchorMessageId) params.set('anchor_message_id', anchorMessageId);
+    const query = params.toString();
+    return request(
+      'GET',
+      `/api/chats/${chatId}/image-prompt-preview${query ? `?${query}` : ''}`,
+    );
+  },
+  generateImage: (chatId, prompt, anchorMessageId, aspect) =>
+    request('POST', `/api/chats/${chatId}/generate-image`, {
+      prompt,
+      anchor_message_id: anchorMessageId ?? null,
+      aspect,
+    }),
   // bookmarks
   listBookmarks: (chatId) => request('GET', `/api/chats/${chatId}/bookmarks`),
   createBookmark: (chatId, b) => request('POST', `/api/chats/${chatId}/bookmarks`, b),
@@ -711,6 +735,96 @@ export function startGenerationStream(chatId, options = {}) {
 
   return {
     close: () => { es.close(); resolved = true; },
+    promise,
+  };
+}
+
+
+/* ====== User-stepped scene → image-prompt streaming ====== */
+
+export function startImagePromptStream(chatId, options = {}) {
+  const params = new URLSearchParams();
+  if (options.continue) params.set('continue', 'true');
+  if (options.anchorMessageId) {
+    params.set('anchor_message_id', options.anchorMessageId);
+  }
+  const query = params.toString();
+  const suffix = query ? `?${query}` : '';
+  const controller = new AbortController();
+  let settled = false;
+  const handlers = {
+    start: options.onStart,
+    delta: options.onDelta,
+    state: options.onState,
+  };
+
+  // A one-shot fetch is intentional here. EventSource may reconnect on its
+  // own, which could turn one user click into a second NovelAI request.
+  const promise = (async () => {
+    let response;
+    try {
+      response = await fetch(`/api/chats/${chatId}/image-prompt${suffix}`, {
+        method: 'POST',
+        signal: controller.signal,
+      });
+    } catch (error) {
+      if (error && error.name === 'AbortError') return { cancelled: true };
+      throw new HttpError(0, error && error.message || 'Network error', null);
+    }
+    if (!response.ok) {
+      let parsed = null;
+      let detail = response.statusText;
+      try {
+        parsed = await response.json();
+        if (parsed && typeof parsed.detail === 'string') detail = parsed.detail;
+      } catch {}
+      throw new HttpError(response.status, `${response.status} ${detail}`, parsed);
+    }
+    if (!response.body) throw new Error('Image-prompt stream has no response body');
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    while (true) {
+      const { value, done } = await reader.read();
+      buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+      let separator = buffer.match(/\r?\n\r?\n/);
+      while (separator && separator.index !== undefined) {
+        const block = buffer.slice(0, separator.index);
+        buffer = buffer.slice(separator.index + separator[0].length);
+        let event = 'message';
+        const data = [];
+        for (const line of block.split(/\r?\n/)) {
+          if (line.startsWith('event:')) event = line.slice(6).trim();
+          if (line.startsWith('data:')) data.push(line.slice(5).replace(/^ /, ''));
+        }
+        if (data.length) {
+          const payload = JSON.parse(data.join('\n'));
+          if (handlers[event]) handlers[event](payload);
+          if (event === 'error') {
+            if (options.onError) options.onError(payload);
+            settled = true;
+            return { error: payload };
+          }
+          if (event === 'done') {
+            if (options.onDone) options.onDone(payload);
+            settled = true;
+            return payload;
+          }
+        }
+        separator = buffer.match(/\r?\n\r?\n/);
+      }
+      if (done) break;
+    }
+    throw new Error('Image-prompt stream ended before completion');
+  })();
+
+  return {
+    close: () => {
+      if (settled) return;
+      settled = true;
+      controller.abort();
+    },
     promise,
   };
 }

@@ -10,6 +10,7 @@ from server.main import app
 
 ALL_THEMES = [
     "dark",
+    "oled",
     "light",
     "noir",
     "pastel",

@@ -83,6 +83,7 @@ GenerationMode = Literal["normal", "swipe", "continue", "impersonate"]
 
 ThemeId = Literal[
     "dark",
+    "oled",
     "light",
     "noir",
     "pastel",
@@ -708,6 +709,12 @@ class Attachment(BaseModel):
     mime: str
     filename: str
     byte_size: int
+    # Uploads and NovelAI-generated pictures share the same durable chat
+    # attachment store.  Optional provenance lets the UI distinguish them
+    # without changing the long-standing attachment wire shape.
+    source: Literal["upload", "generated"] = "upload"
+    prompt: str | None = None
+    seed: int | None = None
 
 
 class ChatMessage(BaseModel):
@@ -768,6 +775,20 @@ class ChatMessages(BaseModel):
     """Container persisted to messages.yaml."""
 
     messages: list[ChatMessage] = Field(default_factory=list)
+
+
+class ImagePromptState(BaseModel):
+    """Persistent, user-stepped scene-to-image prompt work for one chat."""
+
+    model_config = ConfigDict(extra="ignore")
+    # Active-path message selected as the final history item for this prompt.
+    # It may have newer descendants; those are deliberately excluded.
+    context_tip_id: str | None = None
+    response: str = ""
+    prompt: str | None = None
+    complete: bool = False
+    updated_at: float = Field(default_factory=now_seconds)
+    generated_message_id: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -877,6 +898,11 @@ class Chat(BaseModel):
     # lock; ``POST /messages`` consumes (binds) them onto the new
     # ChatMessage and clears them here atomically.
     pending_attachments: list[Attachment] = Field(default_factory=list)
+
+    # Scene-prompt reasoning is kept outside the message tree: it is visible
+    # in the image workflow, survives reloads, and never contaminates normal
+    # roleplay context. Every continuation remains a separate user action.
+    image_prompt_state: ImagePromptState | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -1112,6 +1138,60 @@ class GenericSettings(BaseModel):
     )
 
 
+DEFAULT_IMAGE_SYSTEM_PROMPT = """Create one standalone still-image prompt for the story's exact latest physically realized moment. Freeze time there. Never continue the story, finish an action that is still in progress, anticipate what happens next, or replace the moment with a newly staged scene.
+
+Treat the active story path as evidence of what has already happened, not as a premise to embellish. Before considering composition, establish a scene anchor inside the reasoning: the current location and immediate surroundings, the latest realized instant, every visible person's position, posture, orientation, gaze, clothing configuration, and ongoing physical action, plus the already-present props and interactions. Carry that anchor unchanged into the final prompt. Dialogue, thoughts, intentions, commands, requests, promises, threats, plans, hypotheticals, and descriptions of a desired action do not make that action physically occur. If the latest message contains only speech or thought, preserve the prior physical scene and change only directly supported momentary expression, gaze, or gesture. If an action has begun but has not completed, depict it in progress rather than its outcome.
+
+Do not turn the moment into an establishing shot, symbolic tableau, fantasy, memory, flashback, cutaway, time skip, aftermath, or nearby alternative location unless the active story explicitly places the latest instant there. Do not add a new activity, pose, interaction, garment change, prop, participant, or environmental event merely because it would make a stronger picture. Unspecified rendering details may be chosen conservatively only when the image requires them, and they must not alter any story fact or imply a new event.
+
+The composition must show what the user character sees through their own eyes. Treat the user character as the viewer and camera, positioned at the user's current location, eye height, posture, and implied direction of attention. Never switch to a detached third-person, over-the-shoulder, aerial, surveillance, or externally staged view. Do not compose the user and contact together from a distance. The user is not a separately framed subject. Include only parts of the user's body that would naturally enter their field of view, such as a foreground hand, arm, torso edge, lap, or legs, and only when supported by the scene. Show more of the user only when it is genuinely visible from their eyes through a story-supported reflection or similar optical effect.
+
+Reason carefully inside the already-open <think> element. Establish the exact current instant and what the user's attention is directed toward. Track entrances, exits, positions, orientation, distance, occlusion, and the user's plausible field of view. Build a visual identity ledger for each person who would actually be visible from that viewpoint. Preserve every story-supported canonical trait that can be seen: species, apparent age, skin tone, hair color, length and style, eye color, build, facial features, identifiers, accessories, injuries, pose, expression, gaze, interaction, and spatial position. Use the user's own appearance only for body parts, reflections, shadows, clothing, or other details that are truly visible from the user's perspective. Establish the visible setting, foreground and background objects, depth, lighting, color, weather, and atmosphere.
+
+Reconstruct each visible person's clothing as layered, stateful continuity. Follow the story chronologically and carry forward the latest supported state of each garment. Distinguish a garment worn in its normal position from one that is open, unfastened, raised, lowered, pulled aside, or otherwise displaced; record how and where it is displaced when the story establishes that. Distinguish both from a removed garment, and track the removed garment's location only if it remains visible in the frame. Never collapse a displaced garment into either fully worn or fully removed.
+
+After reconstructing the complete state, filter it through the user's actual view. The final image prompt must mention clothing details only when they can affect the visible pixels: a visible worn garment, a visible displaced portion, a visible exposed area or absence created by removal, or a removed garment that is itself visible elsewhere. Do not mention an inner garment, its condition, or its absence when an outer garment, the person's pose, the framing, or another established occlusion completely hides it. Mentioning a hidden layer can make the image model reveal it, so never expose, remove, rearrange, or see through clothing merely to demonstrate a known hidden state. Do not assume standard underwear or any other unstated garment. Do not invent replacement clothing. When a previously worn or otherwise established garment is absent and that absence is visible, directly say that the garment is not worn at the exposed body region rather than implying it with vague wording. When its absence is not visible, omit it. Apply these rules independently to every garment and layer.
+
+Contact dialogue may include a Visible contact emotion line. Treat each such line as explicit moment-by-moment evidence tied to that dialogue bubble. For the frozen latest moment, prioritize the most recent contact emotion that still applies, while reconciling it with later words and actions. Translate the evidence into a visible facial expression, gaze, posture, and gesture. Never copy an emotion label into the image prompt as a tag.
+
+The image model receives only the final prompt. Explicitly restate all known visual identifiers and all clothing states that affect the visible frame; a name is not a substitute for appearance. Keep people who are outside the user's view out of frame even if they remain present in the wider scene. Do not invent unsupported visual details. Describe one frozen composition and the observable evidence of the current interaction, not narrative progression, alternatives, or instructions to the image model. As the final reasoning step, audit the viewpoint, visible cast, identity ledgers, current emotions, and every garment layer. Confirm that each visibly worn, displaced, or removed garment is represented accurately, each visible absence is explicit, and each fully hidden clothing fact is omitted from the final prompt.
+
+There are two output phases. During reasoning, finish the audit and emit </think> as the final characters of that phase. Do not begin the image prompt in the same phase. When the existing context instead ends with an open <image_prompt> element, continue directly with the standalone image-prompt prose without repeating the opening element. Close it with </image_prompt> and end immediately.
+
+The image-prompt prose must use complete grammatical sentences with clear subjects and verbs. Prefer short sentences joined by ordinary conjunctions. A comma may be used only where normal prose grammar requires it; never use commas to chain standalone attributes, poses, objects, styles, or quality terms. Never write a tag list, keyword inventory, booru or Danbooru vocabulary, quality or rating tags, prompt weights, emphasis syntax, or model-control syntax. Before finishing, rewrite any clause that resembles comma-separated prompting into proper sentences. The final prompt may be detailed and several paragraphs long when the visible scene benefits from it, but it should remain focused and must not exceed roughly 900 words."""
+
+DEFAULT_IMAGE_USER_MESSAGE = """Create a standalone natural-language image prompt for the story's latest physically realized instant, shown through the user character's eyes. Freeze the existing scene without advancing, completing, restaging, or embellishing it. Treat speech, thoughts, intentions, commands, requests, plans, and hypotheticals as unrealized unless the narration establishes their physical occurrence. Preserve the current location, participants, positions, poses, ongoing actions, interactions, props, and wardrobe configuration. Reconstruct every garment as layered state: normally worn, open, unfastened, displaced, or removed. Describe each clothing state or absence only when it affects what is actually visible, and omit inner layers or absences completely hidden by outer clothing, pose, framing, or another established occlusion. Never invent or rearrange garments. Use the latest applicable contact emotion as visual evidence. Use complete prose sentences and never comma-linked prompt tags. If reasoning is open, finish the visual audit and close </think>. If the context already ends with <image_prompt>, write the standalone prompt directly and close </image_prompt>."""
+
+DEFAULT_IMAGE_NEGATIVE_PROMPT = (
+    "lowres, artistic error, film grain, scan artifacts, worst quality, "
+    "bad quality, jpeg artifacts, very displeasing, chromatic aberration, "
+    "dithering, halftone, screentone, multiple views, logo, too many "
+    "watermarks, negative space, blank page, @_@, mismatched pupils, "
+    "glowing eyes, bad anatomy"
+)
+
+
+class ImageGenerationSettings(BaseModel):
+    """NovelAI scene-prompt and diffusion defaults (token is shared)."""
+
+    model_config = ConfigDict(extra="ignore")
+    base_url: str = "https://image.novelai.net"
+    model: str = "nai-diffusion-5-full"
+    prompt_model: str = ""  # blank -> Generic NAI model, then AER default
+    system_prompt: str = DEFAULT_IMAGE_SYSTEM_PROMPT
+    user_message: str = DEFAULT_IMAGE_USER_MESSAGE
+    negative_prompt: str = DEFAULT_IMAGE_NEGATIVE_PROMPT
+    width: int = Field(default=832, ge=64, le=2048)
+    height: int = Field(default=1216, ge=64, le=2048)
+    steps: int = Field(default=23, ge=1, le=50)
+    scale: float = Field(default=7.0, ge=0.0, le=20.0)
+    sampler: str = "k_euler_ancestral"
+    # This is the complete text-response budget: visible reasoning plus the
+    # final prompt.  The larger default leaves room for a final image prompt
+    # of up to 1,471 Qwen 3.5 tokens without forcing an automatic follow-up.
+    prompt_max_tokens: int = Field(default=4096, ge=128, le=8192)
+
+
 class Settings(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
@@ -1151,6 +1231,9 @@ class Settings(BaseModel):
     # Ignored in AER mode, which doesn't put attachments in the prompt.
     compress_images: bool = True
     image_compression_quality: int = Field(default=85, ge=1, le=100)
+    image_generation: ImageGenerationSettings = Field(
+        default_factory=ImageGenerationSettings,
+    )
     tts: TTSSettings = Field(default_factory=TTSSettings)
     # Play a short ping when a generation finishes. Default off so the app
     # stays silent unless the user opts in. ``notification_sound`` is the

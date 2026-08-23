@@ -95,7 +95,7 @@ from server.aer.rollover import (
     build_messages_for_generation,
     get_active_path,
 )
-from server.aer.template import render
+from server.aer.template import count_tokens as count_aer_prompt_tokens, render
 from server.generic.context import (
     GenericGenerationContext,
     build_messages_for_generic,
@@ -1594,6 +1594,198 @@ async def context_tokens(
         # of the prior turn or a preview of the next.
         "active_brains_from_last_gen": from_last_gen,
     }
+
+
+def _truncate_preview_path(
+    active: list[ChatMessage],
+    all_messages: list[ChatMessage],
+    chosen_parent_id: Optional[str],
+    is_regen: bool,
+) -> list[ChatMessage]:
+    """Mirror Generic generation's active-path truncation without mutation."""
+    if not is_regen:
+        return list(active)
+    if chosen_parent_id is None:
+        return []
+    if chosen_parent_id in {message.id for message in active}:
+        path: list[ChatMessage] = []
+        for message in active:
+            path.append(message)
+            if message.id == chosen_parent_id:
+                break
+        return path
+    by_id = {message.id: message for message in all_messages}
+    current = by_id.get(chosen_parent_id)
+    walked: list[ChatMessage] = []
+    while current is not None:
+        walked.append(current)
+        current = by_id.get(current.parent_id) if current.parent_id else None
+    return list(reversed(walked))
+
+
+@router.get("/{chat_id}/context-preview")
+async def context_preview(
+    chat_id: str,
+    parent_id: Optional[str] = Query(default=None),
+    greeting: bool = Query(default=False),
+    is_mobile: bool = Query(default=False),
+    mode: GenerationMode = Query(default="normal"),
+) -> dict:
+    """Build the next regular-chat request context without inference.
+
+    This uses the same provider resolution and AER/Generic context builders
+    as :func:`generate`. It performs no outbound request and mutates neither
+    chat state nor the message tree.
+    """
+    chat = storage.get_chat(chat_id)
+    if chat is None:
+        raise HTTPException(404, f"chat {chat_id!r} not found")
+    contact = storage.get_contact(chat.contact_id)
+    user = storage.get_user(chat.user_id)
+    if contact is None:
+        raise HTTPException(400, "chat references a missing contact")
+    if user is None:
+        raise HTTPException(400, "chat references a missing user persona")
+
+    scenario = _resolve_chat_scenario(chat, contact)
+    libraries = _resolve_chat_libraries(chat)
+    settings = storage.load_settings()
+    try:
+        target = resolve_generation_target(chat, settings)
+    except GenerationTargetError as exc:
+        raise HTTPException(400, exc.message) from exc
+
+    msgs_container = storage.load_chat_messages(chat_id)
+    active = get_active_path(chat, msgs_container.messages)
+    tip_id = active[-1].id if active else None
+    is_regen = parent_id is not None
+    if not is_regen:
+        chosen_parent_id = tip_id
+    elif parent_id == "":
+        chosen_parent_id = None
+    else:
+        chosen_parent_id = parent_id
+
+    if mode == "continue":
+        if not active or active[-1].sender != "contact":
+            raise HTTPException(409, "Continue requires the last message to be from the contact.")
+        if target.mode == "generic" and not active[-1].body:
+            raise HTTPException(409, "Cannot continue an empty message.")
+        chosen_parent_id = active[-1].id
+        is_regen = False
+    elif mode == "impersonate":
+        chosen_parent_id = tip_id
+        is_regen = False
+
+    is_greeting_for_api = chosen_parent_id is None or greeting
+
+    try:
+        if target.mode == "generic":
+            context_preset = storage.get_context_preset(target.context_preset_id)
+            if context_preset is None:
+                raise HTTPException(
+                    400,
+                    "The Context Preset for this chat no longer exists.",
+                )
+            generation_preset = _resolve_preset(
+                chat, settings, storage.load_presets().presets,
+            )
+            if generation_preset is None:
+                raise HTTPException(400, "No generation presets configured.")
+            path = _truncate_preview_path(
+                active,
+                msgs_container.messages,
+                chosen_parent_id,
+                is_regen,
+            )
+            ctx = build_messages_for_generic(
+                chat=chat,
+                contact=contact,
+                user=user,
+                scenario=scenario,
+                preset=context_preset,
+                generation_preset=generation_preset,
+                history=path,
+                settings=settings,
+                libraries=libraries,
+                rollover_cursor=(
+                    chat.rollover_start_index if chat.rolled_over else 0
+                ),
+                is_mobile=is_mobile,
+                mode=mode,
+                brain_message_role=target.brain_message_role,
+            )
+            has_image_data = any(
+                isinstance(message.get("content"), list)
+                and any(
+                    isinstance(part, dict) and part.get("type") == "image_url"
+                    for part in message["content"]
+                )
+                for message in ctx.api_messages
+            )
+            return {
+                "provider_mode": "generic",
+                "provider": target.provider_kind,
+                "model": target.model,
+                "transport": "chat_completions",
+                "generation_mode": mode,
+                "configured_base_url": target.base_url,
+                "context_tip_id": tip_id,
+                "messages": ctx.api_messages,
+                "prompt": None,
+                "input_tokens": ctx.total_tokens,
+                "token_count_kind": "provider or local estimate",
+                "messages_in_context": max(
+                    0, len(ctx.new_path_ids) - ctx.new_cursor,
+                ),
+                "messages_total": len(ctx.new_path_ids),
+                "has_image_data": has_image_data,
+            }
+
+        from server.aer.rollover import MAX_OUTPUT_TOKENS as _MAX
+        ctx = build_messages_for_generation(
+            chat=chat,
+            messages_tree=msgs_container.messages,
+            contact=contact,
+            user=user,
+            scenario=scenario,
+            settings=settings,
+            libraries=libraries,
+            is_greeting=is_greeting_for_api,
+            is_deletion=False,
+            max_output_tokens=_MAX,
+            regen_parent_id=chosen_parent_id,
+            is_regen=is_regen,
+            is_mobile=is_mobile,
+            mode=mode,
+        )
+        prompt = render(
+            ctx.api_messages,
+            add_generation_prompt=True,
+            continue_mode=(mode == "continue"),
+        )
+        seed_name = user.name if mode == "impersonate" else contact.name
+        prompt += f"{seed_name}:"
+        return {
+            "provider_mode": "aetherroom",
+            "provider": "aetherroom",
+            "model": target.model,
+            "transport": "raw_completion",
+            "generation_mode": mode,
+            "configured_base_url": settings.endpoint_url,
+            "context_tip_id": tip_id,
+            "messages": None,
+            "prompt": prompt,
+            "input_tokens": count_aer_prompt_tokens(prompt),
+            "token_count_kind": "exact",
+            "messages_in_context": max(
+                0, len(ctx.new_path_ids) - ctx.new_cursor,
+            ),
+            "messages_total": len(ctx.new_path_ids),
+            "has_image_data": False,
+        }
+    except BrainBudgetExceeded as exc:
+        raise HTTPException(422, str(exc)) from exc
 
 
 def _pick_user_for_contact(contact_id: str):
