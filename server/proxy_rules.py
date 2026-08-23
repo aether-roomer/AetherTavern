@@ -30,7 +30,10 @@ log = logging.getLogger("aether.proxy_rules")
 
 
 KNOWN_CATEGORIES: frozenset[str] = frozenset(
-    {"aetherroom", "tts", "image-import", "generic_llm", "tokenizer"}
+    {
+        "aetherroom", "tts", "image-import", "image-generation",
+        "generic_llm", "tokenizer",
+    }
 )
 KNOWN_PROXY_SCHEMES: frozenset[str] = frozenset(
     {"http", "https", "socks5", "socks5h", "socks4", "socks4a"}

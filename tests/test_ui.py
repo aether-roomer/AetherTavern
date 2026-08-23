@@ -234,6 +234,9 @@ def test_settings_page_renders(page: Page):
     shot(page, "03-settings")
     presets_count = page.locator("h3:has-text('Generation presets')").count()
     assert presets_count > 0
+    assert page.locator("h3:has-text('Image generation')").count() == 1
+    assert page.locator("label:has-text('Image system prompt')").count() == 1
+    assert page.locator("label:has-text('UC (undesired content)')").count() == 1
 
 
 def test_edit_message_modal_textarea_grows_no_inner_scroll(page: Page):
@@ -472,7 +475,7 @@ def test_short_contact_bubble_hugs_content_and_reserves_controls(page: Page, cle
 
 def test_theme_picker_hides_toolbar_toggle_for_custom_themes(page: Page):
     """The toolbar sun/moon button only makes sense for the light/dark pair.
-    Picking any other theme from the 3x3 grid hides it; reverting to light/dark
+    Picking any other theme from the theme grid hides it; reverting to light/dark
     brings it back."""
     page.goto(base_url())
     page.wait_for_selector("#rail")
@@ -492,6 +495,13 @@ def test_theme_picker_hides_toolbar_toggle_for_custom_themes(page: Page):
     )
     assert page.locator('.theme-tile[data-theme="noir"].selected').count() == 1
     shot(page, "04-theme-noir")
+
+    # OLED is a first-class non-toggleable theme with its own true-black tile.
+    assert page.locator('.theme-tile[data-theme="oled"]').count() == 1
+    oled_bg = page.locator('.theme-tile[data-theme="oled"] .theme-tile-preview').evaluate(
+        "el => getComputedStyle(el).backgroundColor"
+    )
+    assert oled_bg == "rgb(0, 0, 0)"
 
     # Server persisted the choice.
     with urlopen(f"{base_url()}/api/settings") as r:
@@ -6023,6 +6033,61 @@ def test_menu_button_opens_popover_with_impersonate(page: Page, clean_state):
     panel_text = page.locator(".chat-input-menu-panel").text_content()
     assert "Impersonate" in panel_text
     assert "Continue" in panel_text
+    assert "View model context" in panel_text
+    assert "Request image" not in panel_text
+
+    page.get_by_role("button", name="View model context", exact=True).click()
+    page.wait_for_selector(".chat-context-modal", timeout=2000)
+    page.wait_for_selector(".chat-context-preview-text", timeout=2000)
+    context_modal = page.locator(".chat-context-modal")
+    assert "does not contact the model" in context_modal.text_content()
+    assert page.get_by_role("button", name="Next reply", exact=True).count() == 1
+    assert page.get_by_role("button", name="Continue", exact=True).count() == 1
+    assert page.get_by_role("button", name="Impersonate", exact=True).count() == 1
+    context_text = page.locator(".chat-context-preview-text").text_content()
+    assert context_text.startswith("[gMASK]<sop><|system|>")
+    assert context_text.endswith("MenuAlice:")
+    page.get_by_role("button", name="Close", exact=True).click()
+
+
+def test_message_control_requests_image_from_historical_point(page: Page, clean_state):
+    _api_create_contact("HistoricalImageAlice")
+    user_id = _api_create_user("HistoricalImageUser")
+    contacts = json.load(urlopen(f"{base_url()}/api/contacts"))
+    contact_id = next(
+        contact["id"]
+        for contact in contacts
+        if contact["name"] == "HistoricalImageAlice"
+    )
+    chat_id = _api_post_chat(contact_id, user_id)
+    first_id = _api_post_user_message(chat_id, "HISTORICAL FIRST MOMENT")
+    _api_post_user_message(
+        chat_id,
+        "NEWER SECOND MOMENT MUST BE EXCLUDED",
+        parent_id=first_id,
+    )
+
+    _open_chat_for_menu(page, chat_id)
+    first_message = page.locator(f'.msg[data-msg-id="{first_id}"]')
+    first_message.hover()
+    first_message.get_by_role(
+        "button", name="Request image from this message", exact=True,
+    ).click()
+    page.wait_for_selector(".image-request-modal", timeout=2000)
+    page.wait_for_selector(".image-context-preview-text", timeout=2000)
+    assert "Request an image after message 1" in page.locator(
+        ".image-request-modal"
+    ).text_content()
+    modal_text = page.locator(".image-request-modal").text_content()
+    assert "Raw model output" in modal_text
+    assert "Raw model output (including the seeded <think>)" not in modal_text
+    assert "Separate provider reasoning channel" not in modal_text
+    assert page.locator(
+        ".image-request-modal .image-request-label"
+    ).all_text_contents() == ["Raw model output", "Image shape", "Image prompt"]
+    prompt = page.locator(".image-context-preview-text").text_content()
+    assert "HISTORICAL FIRST MOMENT" in prompt
+    assert "NEWER SECOND MOMENT MUST BE EXCLUDED" not in prompt
 
 
 def test_menu_button_continue_hidden_when_tip_is_user(page: Page, clean_state):

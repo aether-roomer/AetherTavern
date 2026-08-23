@@ -13,7 +13,7 @@ from server.aer.rollover import get_active_path
 from server.conflicts import check_version
 from server.list_models import ChatListPage, ChatSummary, FavoriteUpdate
 from server.proxy_rules import proxy_rules_scope
-from server.routers.files import sniff_image
+from server.routers.files import delete_attachment_files, sniff_image
 from server.models import (
     EMPTY_SENTINEL,
     ROOT_PARENT_KEY,
@@ -525,20 +525,72 @@ async def update_message(chat_id: str, msg_id: str, req: UpdateMessageRequest) -
 
 @router.delete("/{chat_id}/messages/{msg_id}")
 async def delete_message(chat_id: str, msg_id: str) -> dict:
-    """Soft-delete: mark this branch as ``__empty__`` on its parent."""
+    """Soft-delete a branch and reap generated media hidden with it.
+
+    Text remains restorable through the existing branch undo mechanism, but
+    generated images are durable files and must not become invisible disk
+    orphans. Their attachment records are removed together with the files.
+    """
     async with storage.lock(f"chat:{chat_id}"):
         chat = _ensure_chat(chat_id)
         msgs = storage.load_chat_messages(chat_id)
         target = next((m for m in msgs.messages if m.id == msg_id), None)
         if target is None:
             raise HTTPException(404, f"message {msg_id!r} not found")
+
+        children: dict[str, list[str]] = {}
+        for message in msgs.messages:
+            if message.parent_id is not None:
+                children.setdefault(message.parent_id, []).append(message.id)
+        subtree_ids: set[str] = set()
+        pending = [msg_id]
+        while pending:
+            current = pending.pop()
+            if current in subtree_ids:
+                continue
+            subtree_ids.add(current)
+            pending.extend(children.get(current, ()))
+
+        generated_attachment_ids = {
+            attachment.id
+            for message in msgs.messages
+            if message.id in subtree_ids
+            for attachment in message.attachments
+            if attachment.source == "generated"
+        }
+        # Files first: if the filesystem rejects deletion, leave the branch
+        # and attachment records untouched so the user can retry safely.
+        for attachment_id in generated_attachment_ids:
+            delete_attachment_files(chat_id, attachment_id)
+        if generated_attachment_ids:
+            for message in msgs.messages:
+                if message.id in subtree_ids:
+                    message.attachments = [
+                        attachment
+                        for attachment in message.attachments
+                        if attachment.id not in generated_attachment_ids
+                    ]
+
         key = target.parent_id if target.parent_id is not None else ROOT_PARENT_KEY
         chat.last_deleted_child[key] = msg_id
         chat.selected_child_id[key] = EMPTY_SENTINEL
+        prompt_state = chat.image_prompt_state
+        if prompt_state is not None:
+            if prompt_state.context_tip_id in subtree_ids:
+                chat.image_prompt_state = None
+            elif prompt_state.generated_message_id in subtree_ids:
+                prompt_state.generated_message_id = None
+                prompt_state.updated_at = now_seconds()
         chat.updated_at = now_seconds()
+        if generated_attachment_ids:
+            storage.save_chat_messages(chat_id, msgs)
         storage.recount_active_path(chat, msgs)
         storage.save_chat(chat, bump_version=False)
-        return {"deleted": msg_id, "soft": True}
+        return {
+            "deleted": msg_id,
+            "soft": True,
+            "deleted_generated_attachments": len(generated_attachment_ids),
+        }
 
 
 @router.post("/{chat_id}/messages/{msg_id}/restore")

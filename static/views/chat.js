@@ -1,6 +1,6 @@
 /* Chat view: header, messages, input, per-bubble streaming. */
 
-import { api, startGenerationStream } from '../api.js';
+import { api, startGenerationStream, startImagePromptStream } from '../api.js';
 import { state, setState, subscribe, setChatInMap } from '../state.js';
 import { el, escapeHtml, formatRelative, slugify, userAvatarEl, avatarEl, scenarioAvatarEl, placeholderAvatar, getChatById, visibleViewport } from '../util.js';
 import { icon, openModal, closeModal, confirmModal, toast } from '../ui.js';
@@ -1880,6 +1880,15 @@ function renderMessage(msg, chat, allMessages, opts = {}) {
     dataset: { msgId: msg.id },
   });
 
+  // A generated picture can be removed after later messages have descended
+  // from it. Keep that now-empty node in the server-side branch tree, but do
+  // not leave a ghost sender row in the transcript.
+  const hasBodyText = (msg.body || []).some(b => (b.text || '').trim());
+  if (!hasBodyText && !(msg.attachments && msg.attachments.length)) {
+    wrap.hidden = true;
+    return wrap;
+  }
+
   // For user messages we wrap the header + bubbles in an inline-flex column
   // so the container sizes to the widest of (header content, bubble content),
   // capped at 80% — keeps the username's left edge connected to the bubble.
@@ -1963,20 +1972,44 @@ function renderMessage(msg, chat, allMessages, opts = {}) {
   if (pendingTray) target.append(pendingTray);
 
   // Per-message attachments (generic mode multimodal images). Rendered
-  // below the bubble stack as inline thumbnails. Click opens the
-  // original in a new tab.
+  // below the bubble stack as inline thumbnails. Click opens a viewer.
   if (msg.attachments && msg.attachments.length) {
     const row = el('div', { class: 'bubble-attachments' });
     for (const att of msg.attachments) {
       if (att.mime && att.mime.startsWith('image/')) {
         const url = `/api/files/chats/${chat.id}/attachments/${att.id}`;
-        const link = el('a', {
-          href: url,
-          target: '_blank',
-          rel: 'noopener',
-          title: att.filename || 'attachment',
+        const preview = el('button', {
+          class: 'bubble-attachment-preview',
+          type: 'button',
+          title: `View ${att.filename || 'attachment'}`,
+          onClick: () => openChatImageViewer(url, att),
         }, el('img', { src: url, alt: att.filename || 'attachment' }));
-        row.append(link);
+        const item = el('div', { class: 'bubble-attachment-item' }, preview);
+        if (att.source === 'generated') {
+          item.append(el('button', {
+            class: 'icon-btn danger bubble-attachment-delete',
+            type: 'button',
+            title: 'Delete generated image',
+            'aria-label': 'Delete generated image',
+            onClick: async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const ok = await confirmModal(
+                'Delete generated image?',
+                'The image file will be permanently removed. Later chat messages will remain.',
+                { danger: true, confirmLabel: 'Delete image' },
+              );
+              if (!ok) return;
+              try {
+                await api.deleteMessageAttachment(chat.id, msg.id, att.id);
+                await loadActiveChat(chat.id, { preserveScroll: true, flush: true });
+              } catch (err) {
+                toast(`Could not delete image: ${err.message}`, 'error');
+              }
+            },
+          }, icon('trash', 14)));
+        }
+        row.append(item);
       }
     }
     if (row.children.length) target.append(row);
@@ -2096,6 +2129,9 @@ function renderEmotionSprite(emotion, contact) {
 
 function renderControls(msg, chat, allMessages) {
   const isContact = msg.sender === 'contact';
+  const isGeneratedImageOnly =
+    (msg.attachments || []).some(a => a.source === 'generated')
+    && !(msg.body || []).some(b => (b.text || '').trim());
   // Include the in-flight virtual sibling so the branch counter shows
   // ``N+1/N+1`` (or e.g. ``4/5`` after curleft from the virtual) instead
   // of dropping back to the persisted-only count mid-reroll.
@@ -2139,7 +2175,7 @@ function renderControls(msg, chat, allMessages) {
     controls.append(branch);
   }
 
-  if (isContact) {
+  if (isContact && !isGeneratedImageOnly) {
     controls.append(el('button', {
       class: 'icon-btn', title: 'Regenerate',
       onClick: () => { primeAudioSession(); regenerate(msg, chat); },
@@ -2172,29 +2208,42 @@ function renderControls(msg, chat, allMessages) {
       },
     }, icon(isActive ? 'stop' : 'speaker', 14)));
   }
-  controls.append(el('button', {
-    class: 'icon-btn', title: 'Edit',
-    onClick: () => openEditMessageModal(chat.id, msg),
-  }, icon('edit', 14)));
-  const hasBrains = !!(msg.brains && msg.brains.length);
-  controls.append(el('button', {
-    class: 'icon-btn' + (hasBrains ? ' has-brains' : ''),
-    title: hasBrains ? `Brains (${msg.brains.length})` : 'Brains',
-    onClick: () => {
-      // Resolve the freshest message from state so a previously-saved brain
-      // round-trips through a reopen instead of replaying the stale closure
-      // captured at the time this row was rendered.
-      const fresh = (state.chatMessages || []).find(m => m.id === msg.id) || msg;
-      openEditBrainsModal(chat.id, fresh);
-    },
-  }, icon('brain', 14)));
-  controls.append(el('button', {
-    class: 'icon-btn danger', title: 'Delete branch (undo from the bottom of the chat)',
-    onClick: async () => {
-      await api.deleteMessage(chat.id, msg.id);
-      await loadActiveChat(chat.id, { flush: true });
-    },
-  }, icon('trash', 14)));
+  if (!isGeneratedImageOnly) {
+    controls.append(el('button', {
+      class: 'icon-btn',
+      title: 'Request image from this message',
+      'aria-label': 'Request image from this message',
+      onClick: (event) => {
+        event.stopPropagation();
+        openImageRequestModal(chat, msg.id);
+      },
+    }, icon('image', 14)));
+    controls.append(el('button', {
+      class: 'icon-btn', title: 'Edit',
+      onClick: () => openEditMessageModal(chat.id, msg),
+    }, icon('edit', 14)));
+    const hasBrains = !!(msg.brains && msg.brains.length);
+    controls.append(el('button', {
+      class: 'icon-btn' + (hasBrains ? ' has-brains' : ''),
+      title: hasBrains ? `Brains (${msg.brains.length})` : 'Brains',
+      onClick: () => {
+        // Resolve the freshest message from state so a previously-saved brain
+        // round-trips through a reopen instead of replaying the stale closure
+        // captured at the time this row was rendered.
+        const fresh = (state.chatMessages || []).find(m => m.id === msg.id) || msg;
+        openEditBrainsModal(chat.id, fresh);
+      },
+    }, icon('brain', 14)));
+  }
+  if (!isGeneratedImageOnly) {
+    controls.append(el('button', {
+      class: 'icon-btn danger', title: 'Delete branch (undo from the bottom of the chat)',
+      onClick: async () => {
+        await api.deleteMessage(chat.id, msg.id);
+        await loadActiveChat(chat.id, { flush: true });
+      },
+    }, icon('trash', 14)));
+  }
 
   return controls;
 }
@@ -3214,6 +3263,10 @@ function makeChatInputMenu(chat, ta) {
       close();
       triggerImpersonate(chat);
     }));
+    rows.push(makeMenuRow('View model context', () => {
+      close();
+      openChatContextModal(chat);
+    }));
     if (isGeneric) {
       // Same action as clicking the morphed paperclip button, surfaced as an
       // explicit (icon-less, like the other rows) entry so attach is
@@ -3258,6 +3311,465 @@ function makeChatInputMenu(chat, ta) {
   });
 
   return btn;
+}
+
+
+/* ---------- Read-only regular-chat context preview ---------- */
+
+async function openChatContextModal(chat) {
+  const pathIds = state.activePathIds || [];
+  const messages = state.chatMessages || [];
+  const tip = pathIds.length
+    ? messages.find(message => message.id === pathIds[pathIds.length - 1])
+    : null;
+  const availableModes = [
+    ['normal', 'Next reply'],
+    ...(tip && tip.sender === 'contact' ? [['continue', 'Continue']] : []),
+    ['impersonate', 'Impersonate'],
+  ];
+  let selectedMode = 'normal';
+  let requestRevision = 0;
+  let currentPreview = null;
+  let showFullImageData = false;
+
+  const body = el('div', { class: 'chat-context-modal' });
+  const modeButtons = el('div', { class: 'image-context-preview-modes' });
+  const meta = el('div', { class: 'image-context-preview-meta' });
+  const text = el('pre', {
+    class: 'image-context-preview-text chat-context-preview-text',
+  });
+  const imageDataToggle = el('button', {
+    class: 'btn ghost chat-context-image-data-toggle',
+    type: 'button',
+    style: { display: 'none' },
+    onClick: () => {
+      showFullImageData = !showFullImageData;
+      paintPreview();
+    },
+  });
+
+  function displayMessages(apiMessages) {
+    if (showFullImageData) return apiMessages || [];
+    return (apiMessages || []).map(message => {
+      if (!Array.isArray(message.content)) return message;
+      return {
+        ...message,
+        content: message.content.map(part => {
+          const url = part && part.type === 'image_url'
+            ? part.image_url && part.image_url.url
+            : null;
+          if (typeof url !== 'string' || !url.startsWith('data:')) return part;
+          const comma = url.indexOf(',');
+          const header = comma >= 0 ? url.slice(0, comma) : 'data:';
+          return {
+            ...part,
+            image_url: {
+              ...part.image_url,
+              url: `${header},… [${url.length.toLocaleString('en-US')} characters]`,
+            },
+          };
+        }),
+      };
+    });
+  }
+
+  function paintModes() {
+    modeButtons.replaceChildren(...availableModes.map(([value, label]) => el('button', {
+      class: `btn${selectedMode === value ? ' primary' : ''}`,
+      type: 'button',
+      disabled: selectedMode === value && meta.textContent === 'Preparing local preview…',
+      onClick: () => loadPreview(value),
+    }, label)));
+  }
+
+  function paintPreview() {
+    if (!currentPreview) return;
+    const transport = currentPreview.transport === 'raw_completion'
+      ? 'raw /v1/completions'
+      : 'messages /v1/chat/completions';
+    const messageCount = currentPreview.messages_total == null
+      ? null
+      : `${currentPreview.messages_in_context}/${currentPreview.messages_total} path messages`;
+    meta.textContent = [
+      currentPreview.provider || currentPreview.provider_mode,
+      currentPreview.model || '(no model)',
+      transport,
+      `${currentPreview.generation_mode || selectedMode} mode`,
+      currentPreview.configured_base_url || '(no configured base URL)',
+      `${(currentPreview.input_tokens || 0).toLocaleString('en-US')} input tokens`,
+      currentPreview.token_count_kind,
+      messageCount,
+    ].filter(Boolean).join(' · ');
+    text.textContent = typeof currentPreview.prompt === 'string'
+      ? currentPreview.prompt
+      : JSON.stringify(displayMessages(currentPreview.messages), null, 2);
+    imageDataToggle.style.display = currentPreview.has_image_data ? '' : 'none';
+    imageDataToggle.textContent = showFullImageData
+      ? 'Collapse image data URLs'
+      : 'Show full image data URLs';
+  }
+
+  async function loadPreview(mode) {
+    selectedMode = mode;
+    showFullImageData = false;
+    currentPreview = null;
+    const revision = ++requestRevision;
+    meta.textContent = 'Preparing local preview…';
+    text.textContent = '';
+    imageDataToggle.style.display = 'none';
+    paintModes();
+    try {
+      const preview = await api.chatContextPreview(chat.id, mode);
+      if (revision !== requestRevision) return;
+      currentPreview = preview;
+      paintPreview();
+    } catch (error) {
+      if (revision !== requestRevision) return;
+      meta.textContent = `Preview unavailable: ${error.message}`;
+      text.textContent = '';
+    } finally {
+      if (revision === requestRevision) paintModes();
+    }
+  }
+
+  body.append(
+    el('h3', {}, 'Model context'),
+    el('div', { class: 'hint chat-context-preview-note' },
+      'This is built locally using the regular chat context pipeline. Opening or switching modes does not contact the model. Unsent draft text is not included.'),
+    el('div', { class: 'hint chat-context-preview-note' },
+      'Random-chance brain conditions are evaluated for this preview and may be evaluated differently when a later generation is requested.'),
+    modeButtons,
+    meta,
+    text,
+    imageDataToggle,
+    el('div', { class: 'modal-actions' },
+      el('button', {
+        class: 'btn primary', type: 'button', onClick: () => closeModal(),
+      }, 'Close'),
+    ),
+  );
+  openModal(body, { size: 'large' });
+  paintModes();
+  await loadPreview(selectedMode);
+}
+
+
+/* ---------- User-stepped scene image workflow ---------- */
+
+function openChatImageViewer(url, attachment) {
+  const title = attachment.filename || 'Chat image';
+  const body = el('div', { class: 'chat-image-viewer' },
+    el('h3', {}, title),
+    el('img', { src: url, alt: title }),
+    el('div', { class: 'modal-actions' },
+      el('a', {
+        class: 'btn', href: url, target: '_blank', rel: 'noopener',
+      }, 'Open original'),
+      el('button', {
+        class: 'btn primary', type: 'button', onClick: () => closeModal(),
+      }, 'Close'),
+    ),
+  );
+  openModal(body, { size: 'large' });
+}
+
+async function openImageRequestModal(chat, anchorMessageId = null) {
+  let freshChat = chat;
+  try {
+    freshChat = await api.getChat(chat.id);
+    setChatInMap(chat.id, freshChat);
+  } catch {
+    // The cached chat still gives us a useful modal; the first action will
+    // surface any real server error.
+  }
+  const activePath = state.activePathIds || [];
+  const selectedAnchorId = anchorMessageId
+    || (activePath.length ? activePath[activePath.length - 1] : null);
+  const anchorPosition = selectedAnchorId
+    ? activePath.indexOf(selectedAnchorId)
+    : -1;
+  let workflow = freshChat.image_prompt_state || {
+    context_tip_id: null,
+    response: '',
+    prompt: null,
+    complete: false,
+    generated_message_id: null,
+  };
+  let running = false;
+  let generatingImage = false;
+  let imageAspect = 'portrait';
+  let contextPreviewMode = null;
+  let contextPreviewRequest = 0;
+
+  const body = el('div', { class: 'image-request-modal' });
+  const status = el('div', { class: 'image-request-status' });
+  const response = el('pre', { class: 'image-request-transcript' });
+  const prompt = el('textarea', {
+    class: 'image-request-prompt',
+    rows: 8,
+    placeholder: 'The finished image prompt will appear here. You can edit it before generating.',
+  });
+  const contextPreviewMeta = el('div', { class: 'image-context-preview-meta' });
+  const contextPreviewText = el('pre', { class: 'image-context-preview-text' });
+  const contextPreviewModes = el('div', { class: 'image-context-preview-modes' });
+  const contextPreview = el('details', { class: 'image-context-preview', open: true },
+    el('summary', {}, 'Exact prompt sent for reasoning'),
+    el('div', { class: 'hint image-context-preview-note' },
+      'This raw serialized prompt is generated locally. Opening or switching this preview does not contact NovelAI.'),
+    contextPreviewModes,
+    contextPreviewMeta,
+    contextPreviewText,
+  );
+  const aspectOptions = el('div', { class: 'image-request-aspects' });
+  const rawOutputActions = el('div', { class: 'modal-actions image-request-actions' });
+  const promptActions = el('div', { class: 'modal-actions image-request-actions' });
+  const footerActions = el('div', { class: 'modal-actions image-request-actions' });
+
+  function anchorIsActive() {
+    const path = state.activePathIds || [];
+    return selectedAnchorId === null
+      ? path.length === 0
+      : path.includes(selectedAnchorId);
+  }
+
+  function isStale() {
+    if (!anchorIsActive()) return true;
+    if (!(workflow.response || workflow.prompt)) return false;
+    return workflow.context_tip_id !== selectedAnchorId;
+  }
+
+  function canPreviewContinuation() {
+    return !!workflow.response && !workflow.complete && !isStale();
+  }
+
+  function isImagePromptPhase() {
+    const output = String(workflow.response || '').toLowerCase();
+    return output.lastIndexOf('<image_prompt>') > output.lastIndexOf('</image_prompt>');
+  }
+
+  function formatContextPreview(data) {
+    if (typeof data.prompt === 'string') return data.prompt;
+    return (data.messages || []).map((message, index) =>
+      `[${index + 1}] ${String(message.role || 'message').toUpperCase()}\n${message.content || ''}`
+    ).join('\n\n');
+  }
+
+  function paintContextPreviewModes() {
+    contextPreviewModes.replaceChildren(el('button', {
+      class: `btn${contextPreviewMode === false ? ' primary' : ''}`,
+      type: 'button',
+      disabled: running || generatingImage,
+      onClick: () => loadContextPreview(false),
+    }, 'Fresh request'));
+    if (canPreviewContinuation()) {
+      contextPreviewModes.append(el('button', {
+        class: `btn${contextPreviewMode === true ? ' primary' : ''}`,
+        type: 'button',
+        disabled: running || generatingImage,
+        onClick: () => loadContextPreview(true),
+      }, 'Continuation request'));
+    }
+  }
+
+  async function loadContextPreview(continuing) {
+    const requestId = ++contextPreviewRequest;
+    contextPreviewMode = continuing;
+    contextPreviewMeta.textContent = 'Preparing local preview…';
+    contextPreviewText.textContent = '';
+    paintContextPreviewModes();
+    try {
+      const preview = await api.imagePromptPreview(
+        chat.id,
+        continuing,
+        selectedAnchorId,
+      );
+      if (requestId !== contextPreviewRequest) return;
+      const params = preview.parameters || {};
+      const previewMeta = [
+        `${preview.provider || 'novelai'} · ${preview.model || '(no model)'}`,
+        preview.transport === 'raw_completion' ? 'raw /v1/completions' : preview.transport,
+        `${preview.stage || 'reasoning'} phase`,
+        preview.configured_base_url || '(no configured base URL)',
+        `${preview.input_tokens ?? '?'} / ${preview.input_token_budget ?? '?'} input tokens`,
+        `${preview.reserved_output_tokens ?? params.max_tokens ?? '?'} output tokens reserved`,
+        `${preview.context_window_tokens ?? '?'} total context`,
+        `${preview.content_characters || 0} characters`,
+        `temperature ${params.temperature}`,
+        `top_p ${params.top_p}`,
+        `max tokens ${params.max_tokens}`,
+      ];
+      if (preview.omitted_history_messages) {
+        previewMeta.push(`${preview.omitted_history_messages} older chat messages trimmed`);
+      }
+      contextPreviewMeta.textContent = previewMeta.join(' · ');
+      contextPreviewText.textContent = formatContextPreview(preview);
+    } catch (err) {
+      if (requestId !== contextPreviewRequest) return;
+      contextPreviewMeta.textContent = `Preview unavailable: ${err.message}`;
+      contextPreviewText.textContent = '';
+    }
+  }
+
+  function paint({ preservePrompt = false } = {}) {
+    response.textContent = workflow.response || 'No model output yet.';
+    if (!preservePrompt) prompt.value = workflow.prompt || '';
+    paintContextPreviewModes();
+    aspectOptions.replaceChildren(...[
+      ['portrait', 'Portrait', '832 × 1216'],
+      ['landscape', 'Landscape', '1216 × 832'],
+      ['square', 'Square', '1024 × 1024'],
+    ].map(([value, label, dimensions]) => el('button', {
+      class: `image-request-aspect${imageAspect === value ? ' active' : ''}`,
+      type: 'button',
+      disabled: running || generatingImage,
+      'aria-pressed': imageAspect === value ? 'true' : 'false',
+      onClick: () => {
+        imageAspect = value;
+        paint({ preservePrompt: true });
+      },
+    }, el('span', {}, label), el('small', {}, dimensions))));
+    if (running) {
+      status.textContent = 'NovelAI is reasoning about the current scene…';
+    } else if (generatingImage) {
+      status.textContent = 'NovelAI is generating the image…';
+    } else if (isStale()) {
+      status.textContent = 'This prompt belongs to another message, or the selected message left the active path. Start over for this moment.';
+    } else if (workflow.complete) {
+      status.textContent = 'Prompt complete. Review or edit it, then explicitly generate the image.';
+    } else if (isImagePromptPhase()) {
+      status.textContent = 'Reasoning complete. Continue when you are ready to write the image prompt.';
+    } else if (workflow.response) {
+      status.textContent = 'The prompt is incomplete. Continue only when you are ready for another API request.';
+    } else {
+      status.textContent = 'Request reasoning first. Image generation is a separate action.';
+    }
+
+    rawOutputActions.replaceChildren();
+    if (workflow.response && !workflow.complete && !isStale()) {
+      rawOutputActions.append(el('button', {
+        class: 'btn',
+        type: 'button',
+        disabled: running || generatingImage,
+        onClick: () => runReasoning(true),
+      }, isImagePromptPhase() ? 'Continue to image prompt' : 'Continue reasoning'));
+    }
+    rawOutputActions.append(el('button', {
+      class: 'btn',
+      type: 'button',
+      disabled: running || generatingImage,
+      onClick: () => runReasoning(false),
+    }, workflow.response ? 'Start over' : 'Reason about scene'));
+
+    promptActions.replaceChildren(el('button', {
+      class: 'btn primary',
+      type: 'button',
+      disabled: running || generatingImage || !prompt.value.trim() || isStale(),
+      onClick: generatePicture,
+    }, generatingImage ? 'Generating…' : 'Generate image'));
+
+    footerActions.replaceChildren(el('button', {
+      class: 'btn ghost',
+      type: 'button',
+      disabled: running || generatingImage,
+      onClick: () => closeModal(),
+    }, 'Close'));
+  }
+
+  async function syncChatState() {
+    try {
+      const updated = await api.getChat(chat.id);
+      setChatInMap(chat.id, updated);
+      if (updated.image_prompt_state) workflow = updated.image_prompt_state;
+    } catch {}
+  }
+
+  async function runReasoning(continuing) {
+    if (running || generatingImage) return;
+    running = true;
+    if (!continuing) {
+      workflow = {
+        context_tip_id: selectedAnchorId,
+        response: '', prompt: null, complete: false,
+        generated_message_id: null,
+      };
+    }
+    paint();
+    const stream = startImagePromptStream(chat.id, {
+      continue: continuing,
+      anchorMessageId: selectedAnchorId,
+      onStart: (data) => {
+        workflow.context_tip_id = data.context_tip_id;
+        if (typeof data.response_prefix === 'string') {
+          workflow.response = data.response_prefix;
+          response.textContent = workflow.response;
+        }
+      },
+      onDelta: (data) => {
+        workflow.response += data.text || '';
+        response.textContent = workflow.response;
+        response.scrollTop = response.scrollHeight;
+      },
+      onState: (data) => {
+        workflow = { ...workflow, ...data };
+      },
+      onError: (error) => toast(`Image prompt failed: ${error.message}`, 'error'),
+    });
+    try {
+      await stream.promise;
+    } catch (err) {
+      toast(`Image prompt failed: ${err.message}`, 'error');
+    } finally {
+      running = false;
+      await syncChatState();
+      paint();
+      await loadContextPreview(canPreviewContinuation());
+    }
+  }
+
+  async function generatePicture() {
+    const finalPrompt = prompt.value.trim();
+    if (!finalPrompt || running || generatingImage || isStale()) return;
+    generatingImage = true;
+    paint({ preservePrompt: true });
+    try {
+      await api.generateImage(chat.id, finalPrompt, selectedAnchorId, imageAspect);
+      closeModal();
+      await loadActiveChat(chat.id, { flush: true });
+      toast('Image added to the chat.', 'success');
+      playNotification();
+    } catch (err) {
+      toast(`Image generation failed: ${err.message}`, 'error');
+      generatingImage = false;
+      paint({ preservePrompt: true });
+    }
+  }
+
+  body.append(
+    el('h3', {}, anchorPosition >= 0
+      ? `Request an image after message ${anchorPosition + 1}`
+      : 'Request an image'),
+    el('div', { class: 'hint image-request-anchor-note' },
+      selectedAnchorId
+        ? 'Reasoning includes the active story only through the selected message. Newer messages are excluded, and the generated image will be inserted directly below the selected message.'
+        : 'This chat has no messages yet. The generated image will become its first message.'),
+    status,
+    contextPreview,
+    el('div', { class: 'image-request-label' }, 'Raw model output'),
+    response,
+    rawOutputActions,
+    el('div', { class: 'image-request-label' }, 'Image shape'),
+    aspectOptions,
+    el('div', { class: 'image-request-label' }, 'Image prompt'),
+    prompt,
+    promptActions,
+    el('div', { class: 'hint image-request-hint' },
+      'Each Reason, Continue, and Generate click makes at most one NovelAI API request.'),
+    footerActions,
+  );
+  prompt.addEventListener('input', () => paint({ preservePrompt: true }));
+  openModal(body, { size: 'large' });
+  paint();
+  await loadContextPreview(canPreviewContinuation());
 }
 
 function makeMenuRow(label, onClick) {

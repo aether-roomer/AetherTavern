@@ -60,12 +60,72 @@ export async function renderSettingsTab(container) {
   setState({ settings, presets });
 
   body.append(renderInferenceSection(settings));
+  body.append(renderImageGenerationSection(settings));
   body.append(renderAppearanceSection(settings));
   body.append(renderNotificationsSection(settings));
   body.append(renderBudgetsSection(settings));
   body.append(renderTTSSection(settings));
   body.append(renderBulkImportSection());
   body.append(renderPresetsSection(presets, settings));
+}
+
+
+function renderImageGenerationSection(settings) {
+  const draft = JSON.parse(JSON.stringify(settings.image_generation || {}));
+  const save = debounce(() => patchSettings({ image_generation: draft }));
+  const input = (key, opts = {}) => el(opts.tag || 'input', {
+    ...(opts.tag === 'textarea' ? { rows: opts.rows || 4 } : { type: opts.type || 'text' }),
+    value: draft[key] ?? '',
+    placeholder: opts.placeholder || '',
+    min: opts.min,
+    max: opts.max,
+    step: opts.step,
+    onInput: (e) => {
+      draft[key] = opts.number ? Number(e.target.value) : e.target.value;
+      save();
+    },
+  });
+  const field = (label, key, opts = {}) => el('div', { class: 'form-group' },
+    el('label', {}, label),
+    input(key, opts),
+    opts.hint ? el('div', { class: 'hint' }, opts.hint) : null,
+  );
+
+  return el('div', { class: 'section' },
+    el('h3', {}, 'Image generation'),
+    el('p', { style: { color: 'var(--text-mute)', fontSize: '13px', margin: '0 0 14px' } },
+      'The chat image workflow uses your NovelAI token. Prompt reasoning and image generation are separate, explicit actions.'),
+    el('div', { class: 'form-grid-2' },
+      field('Image API base URL', 'base_url', { type: 'url' }),
+      field('Image model', 'model'),
+      field('Prompt reasoning model', 'prompt_model', {
+        hint: 'Blank inherits the configured NovelAI text model, then the AER default. An inherited xialong-v1 uses glm-4-6 for image prompting.',
+      }),
+      field('Sampler', 'sampler'),
+    ),
+    el('div', { class: 'form-grid-3', style: { marginTop: '18px' } },
+      field('Width', 'width', { type: 'number', number: true, min: 64, max: 2048, step: 64 }),
+      field('Height', 'height', { type: 'number', number: true, min: 64, max: 2048, step: 64 }),
+      field('Steps', 'steps', { type: 'number', number: true, min: 1, max: 50, step: 1 }),
+      field('Guidance scale', 'scale', { type: 'number', number: true, min: 0, max: 20, step: .1 }),
+      field('Total reasoning output limit', 'prompt_max_tokens', {
+        type: 'number', number: true, min: 128, max: 8192, step: 128,
+        hint: 'Includes visible <think> output and the final prompt. The default leaves room for a final prompt up to 1,471 Qwen 3.5 tokens.',
+      }),
+    ),
+    field('Image system prompt', 'system_prompt', {
+      tag: 'textarea', rows: 12,
+      hint: 'Controls scene analysis, continuity checks, and the <image_prompt> output contract.',
+    }),
+    field('Image user message', 'user_message', {
+      tag: 'textarea', rows: 5,
+      hint: 'Sent after the active scene context on the first reasoning request.',
+    }),
+    field('UC (undesired content)', 'negative_prompt', {
+      tag: 'textarea', rows: 5,
+      hint: 'Sent directly to NovelAI as both the v4 negative caption and negative_prompt.',
+    }),
+  );
 }
 
 

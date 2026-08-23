@@ -1041,6 +1041,40 @@ def _attachment_paths(chat_id: str, att_id: str) -> tuple[Path | None, Path | No
     return d, None
 
 
+def delete_attachment_files(chat_id: str, att_id: str) -> None:
+    """Delete every on-disk file owned by one attachment id.
+
+    Besides the original ``attachments/{id}.{ext}``, Generic-mode context
+    building can create ``attachments/.cached/{id}.q*.jpg`` derivatives.
+    A user-visible delete must remove both (including interrupted-write
+    ``.tmp`` siblings) and must not report success when unlinking fails.
+    """
+    attachment_dir = storage.chat_attachments_dir(chat_id)
+    if attachment_dir is None:
+        return
+    owned: list[Path] = []
+    if attachment_dir.exists():
+        owned.extend(p for p in attachment_dir.glob(f"{att_id}.*") if p.is_file())
+    cache_dir = storage.chat_attachment_cache_dir(chat_id)
+    if cache_dir is not None and cache_dir.exists():
+        owned.extend(p for p in cache_dir.glob(f"{att_id}.*") if p.is_file())
+
+    failures: list[str] = []
+    for path in owned:
+        try:
+            path.unlink(missing_ok=True)
+        except OSError:
+            failures.append(path.name)
+    if failures:
+        names = ", ".join(sorted(set(failures)))
+        raise HTTPException(500, f"Could not delete attachment file(s): {names}")
+    if cache_dir is not None and cache_dir.exists():
+        try:
+            cache_dir.rmdir()
+        except OSError:
+            pass
+
+
 @router.post("/api/chats/{chat_id}/attachments")
 async def upload_chat_attachment(chat_id: str, file: UploadFile) -> dict:
     """Stash an attachment file under the chat dir AND append it to
@@ -1108,6 +1142,7 @@ async def delete_chat_attachment(chat_id: str, att_id: str) -> dict:
     list. Used by the chip row's remove button. Lock held across both
     operations so a concurrent send doesn't bind a half-deleted ref."""
     async with storage.lock(f"chat:{chat_id}"):
+        delete_attachment_files(chat_id, att_id)
         chat = storage.get_chat(chat_id)
         if chat is not None:
             new_pending = [
@@ -1116,10 +1151,33 @@ async def delete_chat_attachment(chat_id: str, att_id: str) -> dict:
             if len(new_pending) != len(chat.pending_attachments):
                 chat.pending_attachments = new_pending
                 storage.save_chat(chat, bump_version=False)
-        _, match = _attachment_paths(chat_id, att_id)
-        if match is not None and match.exists():
-            try:
-                match.unlink()
-            except OSError:
-                pass
+    return {"ok": True}
+
+
+@router.delete("/api/chats/{chat_id}/messages/{message_id}/attachments/{att_id}")
+async def delete_message_attachment(
+    chat_id: str, message_id: str, att_id: str,
+) -> dict:
+    """Remove one persisted message image without deleting its branch.
+
+    The empty message node intentionally remains in the tree so any later
+    conversation descending from the picture keeps the same parent chain.
+    The chat renderer hides nodes that have neither text nor attachments.
+    """
+    async with storage.lock(f"chat:{chat_id}"):
+        chat = storage.get_chat(chat_id)
+        if chat is None:
+            raise HTTPException(404, "chat not found")
+        messages = storage.load_chat_messages(chat_id)
+        target = next((m for m in messages.messages if m.id == message_id), None)
+        if target is None:
+            raise HTTPException(404, "message not found")
+        if not any(a.id == att_id for a in target.attachments):
+            raise HTTPException(404, "attachment not found on message")
+        # Delete every original/cache file before removing the reference. If
+        # the filesystem rejects deletion, the message remains retryable and
+        # the client receives an error instead of a false success response.
+        delete_attachment_files(chat_id, att_id)
+        target.attachments = [a for a in target.attachments if a.id != att_id]
+        storage.save_chat_messages(chat_id, messages)
     return {"ok": True}

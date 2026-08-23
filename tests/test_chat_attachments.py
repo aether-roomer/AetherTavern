@@ -10,6 +10,7 @@ image attachments.
 from __future__ import annotations
 
 import base64
+from pathlib import Path
 
 from fastapi.testclient import TestClient
 
@@ -190,6 +191,43 @@ def test_attachment_delete_removes_file(tmp_storage):
         r = client.delete(f"/api/chats/{chat_id}/attachments/{att['id']}")
         assert r.status_code == 200
         assert not any(d.glob(f"{att['id']}.*"))
+
+
+def test_message_attachment_delete_failure_is_not_false_success(
+    tmp_storage, monkeypatch,
+):
+    """A failed unlink must leave the message reference available to retry."""
+    with TestClient(app) as client:
+        chat_id, _, _ = _make_chat(client)
+        att = client.post(
+            f"/api/chats/{chat_id}/attachments",
+            files={"file": ("cat.png", _PNG_1X1, "image/png")},
+        ).json()
+        message = client.post(
+            f"/api/chats/{chat_id}/messages",
+            json={
+                "sender": "user",
+                "body": [{"text": "look", "emotion": "neutral"}],
+                "attachments": [att],
+            },
+        ).json()
+        original = next(storage.chat_attachments_dir(chat_id).glob(f"{att['id']}.*"))
+        real_unlink = Path.unlink
+
+        def deny_original(path, *args, **kwargs):
+            if path == original:
+                raise PermissionError("read only")
+            return real_unlink(path, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "unlink", deny_original)
+        response = client.delete(
+            f"/api/chats/{chat_id}/messages/{message['id']}/attachments/{att['id']}"
+        )
+        assert response.status_code == 500
+        stored = storage.load_chat_messages(chat_id)
+        target = next(m for m in stored.messages if m.id == message["id"])
+        assert [a.id for a in target.attachments] == [att["id"]]
+        assert original.exists()
 
 
 def test_attachment_export_import_round_trip(tmp_storage):

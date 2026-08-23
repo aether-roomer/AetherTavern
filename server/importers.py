@@ -2022,6 +2022,12 @@ def _decode_message_attachments(
             mime=mime,
             filename=str(entry.get("filename") or f"attachment.{ext}"),
             byte_size=int(entry.get("byteSize") or len(payload)),
+            source="generated" if entry.get("source") == "generated" else "upload",
+            prompt=(
+                str(entry["prompt"])
+                if isinstance(entry.get("prompt"), str) else None
+            ),
+            seed=(entry.get("seed") if isinstance(entry.get("seed"), int) else None),
         ))
     return out
 

@@ -27,6 +27,8 @@ A: You probably have the provider tab at the top of the settings page set "Gener
 - **AetherRoom format** — chat with emotive contacts showing up to 24 different emotion sprites, depending on the situation.
 - **Generic OpenAI API** — use any OpenAI compatible provider API with a chat completion endpoint
 - **Multimodal** - when using a multimodal model via an OpenAI compatible provider, you can send images
+- **Scene images** — request a picture from the current tip or any selected message. NovelAI reasons only over history through that point, then inserts the persistent contact picture there without losing newer messages. Every text/image API request requires its own click.
+- **Model-context preview** — inspect the locally built context for the next regular reply, Continue, or Impersonate action before contacting the model. AER shows its exact raw completion prompt; Generic shows its messages array.
 - **Branching chats** — reroll any reply, swap between sibling branches, bookmark moments you want to come back to.
 - **Multi-bubble messages** - with per-bubble emotion sprites.
 - **Contacts, user personas, and reusable scenarios** - each with attachable brains/lore blocks.
@@ -35,7 +37,7 @@ A: You probably have the provider tab at the top of the settings page set "Gener
 - **Import / export** — imports AetherRoom formats, SillyTavern character cards, SillyTavern world-info JSON, NovelAI lorebook JSON and PNG, and bulk-import zips of any combination. Exports JSON compatible with SomethingRoom, plus PNG cards for easy sharing.
 - **Mobile-friendly** — edge-swipe back, swipe between branches, tap-to-reveal controls.
 - **Keyboard shortcuts** - for desktop power users: arrow-key navigation, type-to-focus, branch cycling, and more.
-- **Nine color themes** - including both light and dark, with configurable UI and content font sizes.
+- **Ten color themes** - including light, dark, and true-black OLED, with configurable UI and content font sizes.
 - **Auto-save everywhere** - with conflict resolution if you have the same chat open in two tabs.
 - **Fully local** — listens on `127.0.0.1`, no telemetry, your data stays in `data/` on disk.
 - **Macros** — you can use many macros familiar from SillyTavern
