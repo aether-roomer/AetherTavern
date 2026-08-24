@@ -237,6 +237,50 @@ def test_settings_page_renders(page: Page):
     assert page.locator("h3:has-text('Image generation')").count() == 1
     assert page.locator("label:has-text('Image system prompt')").count() == 1
     assert page.locator("label:has-text('UC (undesired content)')").count() == 1
+    assert page.locator(".image-setting-reset").count() == 3
+
+
+def test_image_text_settings_reset_independently(page: Page):
+    shipped = json.load(urlopen(f"{base_url()}/api/settings"))[
+        "image_generation_defaults"
+    ]
+    page.goto(base_url())
+    page.click('.rail-btn[data-tab="settings"]')
+    page.wait_for_selector(".image-setting-reset", timeout=5000)
+
+    system = page.locator('textarea[data-setting-key="system_prompt"]')
+    user = page.locator('textarea[data-setting-key="user_message"]')
+    uc = page.locator('textarea[data-setting-key="negative_prompt"]')
+    system.fill("CUSTOM IMAGE SYSTEM")
+    user.fill("CUSTOM IMAGE USER")
+    uc.fill("CUSTOM IMAGE UC")
+    page.wait_for_timeout(250)
+
+    page.locator(
+        '.image-setting-reset[data-setting-key="system_prompt"]'
+    ).click()
+    assert system.input_value() == shipped["system_prompt"]
+    assert user.input_value() == "CUSTOM IMAGE USER"
+    assert uc.input_value() == "CUSTOM IMAGE UC"
+    page.wait_for_timeout(250)
+    saved = json.load(urlopen(f"{base_url()}/api/settings"))["image_generation"]
+    assert saved["system_prompt"] == shipped["system_prompt"]
+    assert saved["user_message"] == "CUSTOM IMAGE USER"
+    assert saved["negative_prompt"] == "CUSTOM IMAGE UC"
+
+    page.locator(
+        '.image-setting-reset[data-setting-key="user_message"]'
+    ).click()
+    page.locator(
+        '.image-setting-reset[data-setting-key="negative_prompt"]'
+    ).click()
+    assert user.input_value() == shipped["user_message"]
+    assert uc.input_value() == shipped["negative_prompt"]
+    page.wait_for_timeout(250)
+    saved = json.load(urlopen(f"{base_url()}/api/settings"))["image_generation"]
+    assert saved["system_prompt"] == shipped["system_prompt"]
+    assert saved["user_message"] == shipped["user_message"]
+    assert saved["negative_prompt"] == shipped["negative_prompt"]
 
 
 def test_edit_message_modal_textarea_grows_no_inner_scroll(page: Page):
@@ -6082,12 +6126,24 @@ def test_message_control_requests_image_from_historical_point(page: Page, clean_
     assert "Raw model output" in modal_text
     assert "Raw model output (including the seeded <think>)" not in modal_text
     assert "Separate provider reasoning channel" not in modal_text
+    assert "Fresh request" not in modal_text
+    assert "Continuation request" not in modal_text
     assert page.locator(
         ".image-request-modal .image-request-label"
-    ).all_text_contents() == ["Raw model output", "Image shape", "Image prompt"]
+    ).all_text_contents() == [
+        "Raw model output", "Image resolution", "Image prompt",
+    ]
     prompt = page.locator(".image-context-preview-text").text_content()
     assert "HISTORICAL FIRST MOMENT" in prompt
     assert "NEWER SECOND MOMENT MUST BE EXCLUDED" not in prompt
+    assert "Resolution: 832 × 1216 pixels" in prompt
+
+    page.locator(".image-request-aspect", has_text="Landscape").click()
+    page.wait_for_function(
+        """() => document.querySelector('.image-context-preview-text')
+          ?.textContent.includes('Resolution: 1216 × 832 pixels')""",
+        timeout=2000,
+    )
 
 
 def test_menu_button_continue_hidden_when_tip_is_user(page: Page, clean_state):

@@ -72,6 +72,7 @@ export async function renderSettingsTab(container) {
 
 function renderImageGenerationSection(settings) {
   const draft = JSON.parse(JSON.stringify(settings.image_generation || {}));
+  const defaults = settings.image_generation_defaults || {};
   const save = debounce(() => patchSettings({ image_generation: draft }));
   const input = (key, opts = {}) => el(opts.tag || 'input', {
     ...(opts.tag === 'textarea' ? { rows: opts.rows || 4 } : { type: opts.type || 'text' }),
@@ -80,16 +81,37 @@ function renderImageGenerationSection(settings) {
     min: opts.min,
     max: opts.max,
     step: opts.step,
+    dataset: { settingKey: key },
     onInput: (e) => {
       draft[key] = opts.number ? Number(e.target.value) : e.target.value;
       save();
     },
   });
-  const field = (label, key, opts = {}) => el('div', { class: 'form-group' },
-    el('label', {}, label),
-    input(key, opts),
-    opts.hint ? el('div', { class: 'hint' }, opts.hint) : null,
-  );
+  const field = (label, key, opts = {}) => {
+    const control = input(key, opts);
+    const labelRow = el('div', { class: 'image-setting-label-row' },
+      el('label', {}, label),
+    );
+    if (typeof opts.defaultValue === 'string') {
+      labelRow.append(el('button', {
+        class: 'icon-btn image-setting-reset',
+        type: 'button',
+        title: `Reset ${label} to default`,
+        'aria-label': `Reset ${label} to default`,
+        dataset: { settingKey: key },
+        onClick: () => {
+          draft[key] = opts.defaultValue;
+          control.value = opts.defaultValue;
+          save();
+        },
+      }, icon('refresh', 14)));
+    }
+    return el('div', { class: 'form-group' },
+      labelRow,
+      control,
+      opts.hint ? el('div', { class: 'hint' }, opts.hint) : null,
+    );
+  };
 
   return el('div', { class: 'section' },
     el('h3', {}, 'Image generation'),
@@ -115,14 +137,17 @@ function renderImageGenerationSection(settings) {
     ),
     field('Image system prompt', 'system_prompt', {
       tag: 'textarea', rows: 12,
+      defaultValue: defaults.system_prompt,
       hint: 'Controls scene analysis, continuity checks, and the <image_prompt> output contract.',
     }),
     field('Image user message', 'user_message', {
       tag: 'textarea', rows: 5,
+      defaultValue: defaults.user_message,
       hint: 'Sent after the active scene context on the first reasoning request.',
     }),
     field('UC (undesired content)', 'negative_prompt', {
       tag: 'textarea', rows: 5,
+      defaultValue: defaults.negative_prompt,
       hint: 'Sent directly to NovelAI as both the v4 negative caption and negative_prompt.',
     }),
   );

@@ -8,6 +8,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from server import storage
 from server.models import (
+    DEFAULT_IMAGE_NEGATIVE_PROMPT,
+    DEFAULT_IMAGE_SYSTEM_PROMPT,
+    DEFAULT_IMAGE_USER_MESSAGE,
     GenericProviderKind,
     GenericSettings,
     ImageGenerationSettings,
@@ -123,6 +126,14 @@ class GenericSettingsView(BaseModel):
 # --- Settings view + update --------------------------------------------
 
 
+class ImageGenerationDefaultsView(BaseModel):
+    """Shipped text defaults exposed for independent UI reset buttons."""
+
+    system_prompt: str = DEFAULT_IMAGE_SYSTEM_PROMPT
+    user_message: str = DEFAULT_IMAGE_USER_MESSAGE
+    negative_prompt: str = DEFAULT_IMAGE_NEGATIVE_PROMPT
+
+
 class SettingsView(BaseModel):
     """Settings as returned by GET — never includes raw API keys."""
 
@@ -143,11 +154,10 @@ class SettingsView(BaseModel):
     compress_images: bool
     image_compression_quality: int
     image_generation: ImageGenerationSettings
+    image_generation_defaults: ImageGenerationDefaultsView
     tts: TTSSettingsView
     notify_on_complete: bool
     notification_sound: str | None
-
-
 class SettingsUpdate(BaseModel):
     """All fields optional; missing keys preserve existing values.
 
@@ -336,6 +346,7 @@ def _to_view(s: Settings) -> SettingsView:
         compress_images=s.compress_images,
         image_compression_quality=s.image_compression_quality,
         image_generation=s.image_generation,
+        image_generation_defaults=ImageGenerationDefaultsView(),
         tts=_to_tts_view(s.tts),
         notify_on_complete=s.notify_on_complete,
         notification_sound=s.notification_sound,
