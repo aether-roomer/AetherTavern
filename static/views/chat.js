@@ -3494,11 +3494,11 @@ async function openImageRequestModal(chat, anchorMessageId = null) {
     prompt: null,
     complete: false,
     generated_message_id: null,
+    aspect: null,
   };
   let running = false;
   let generatingImage = false;
-  let imageAspect = 'portrait';
-  let contextPreviewMode = null;
+  let imageAspect = workflow.aspect || 'portrait';
   let contextPreviewRequest = 0;
 
   const body = el('div', { class: 'image-request-modal' });
@@ -3511,12 +3511,10 @@ async function openImageRequestModal(chat, anchorMessageId = null) {
   });
   const contextPreviewMeta = el('div', { class: 'image-context-preview-meta' });
   const contextPreviewText = el('pre', { class: 'image-context-preview-text' });
-  const contextPreviewModes = el('div', { class: 'image-context-preview-modes' });
   const contextPreview = el('details', { class: 'image-context-preview', open: true },
     el('summary', {}, 'Exact prompt sent for reasoning'),
     el('div', { class: 'hint image-context-preview-note' },
-      'This raw serialized prompt is generated locally. Opening or switching this preview does not contact NovelAI.'),
-    contextPreviewModes,
+      'This raw serialized prompt is generated locally. Viewing it does not contact NovelAI.'),
     contextPreviewMeta,
     contextPreviewText,
   );
@@ -3539,7 +3537,16 @@ async function openImageRequestModal(chat, anchorMessageId = null) {
   }
 
   function canPreviewContinuation() {
-    return !!workflow.response && !workflow.complete && !isStale();
+    return !!workflow.response
+      && !workflow.complete
+      && !isStale()
+      && !resolutionChanged();
+  }
+
+  function resolutionChanged() {
+    return !!workflow.response
+      && !!workflow.aspect
+      && workflow.aspect !== imageAspect;
   }
 
   function isImagePromptPhase() {
@@ -3554,34 +3561,16 @@ async function openImageRequestModal(chat, anchorMessageId = null) {
     ).join('\n\n');
   }
 
-  function paintContextPreviewModes() {
-    contextPreviewModes.replaceChildren(el('button', {
-      class: `btn${contextPreviewMode === false ? ' primary' : ''}`,
-      type: 'button',
-      disabled: running || generatingImage,
-      onClick: () => loadContextPreview(false),
-    }, 'Fresh request'));
-    if (canPreviewContinuation()) {
-      contextPreviewModes.append(el('button', {
-        class: `btn${contextPreviewMode === true ? ' primary' : ''}`,
-        type: 'button',
-        disabled: running || generatingImage,
-        onClick: () => loadContextPreview(true),
-      }, 'Continuation request'));
-    }
-  }
-
   async function loadContextPreview(continuing) {
     const requestId = ++contextPreviewRequest;
-    contextPreviewMode = continuing;
     contextPreviewMeta.textContent = 'Preparing local preview…';
     contextPreviewText.textContent = '';
-    paintContextPreviewModes();
     try {
       const preview = await api.imagePromptPreview(
         chat.id,
         continuing,
         selectedAnchorId,
+        imageAspect,
       );
       if (requestId !== contextPreviewRequest) return;
       const params = preview.parameters || {};
@@ -3594,6 +3583,7 @@ async function openImageRequestModal(chat, anchorMessageId = null) {
         `${preview.reserved_output_tokens ?? params.max_tokens ?? '?'} output tokens reserved`,
         `${preview.context_window_tokens ?? '?'} total context`,
         `${preview.content_characters || 0} characters`,
+        `${preview.width || '?'} × ${preview.height || '?'} pixels`,
         `temperature ${params.temperature}`,
         `top_p ${params.top_p}`,
         `max tokens ${params.max_tokens}`,
@@ -3613,7 +3603,6 @@ async function openImageRequestModal(chat, anchorMessageId = null) {
   function paint({ preservePrompt = false } = {}) {
     response.textContent = workflow.response || 'No model output yet.';
     if (!preservePrompt) prompt.value = workflow.prompt || '';
-    paintContextPreviewModes();
     aspectOptions.replaceChildren(...[
       ['portrait', 'Portrait', '832 × 1216'],
       ['landscape', 'Landscape', '1216 × 832'],
@@ -3626,6 +3615,7 @@ async function openImageRequestModal(chat, anchorMessageId = null) {
       onClick: () => {
         imageAspect = value;
         paint({ preservePrompt: true });
+        loadContextPreview(canPreviewContinuation());
       },
     }, el('span', {}, label), el('small', {}, dimensions))));
     if (running) {
@@ -3634,6 +3624,8 @@ async function openImageRequestModal(chat, anchorMessageId = null) {
       status.textContent = 'NovelAI is generating the image…';
     } else if (isStale()) {
       status.textContent = 'This prompt belongs to another message, or the selected message left the active path. Start over for this moment.';
+    } else if (resolutionChanged()) {
+      status.textContent = 'The resolution changed. Start over so composition is reasoned for the selected canvas.';
     } else if (workflow.complete) {
       status.textContent = 'Prompt complete. Review or edit it, then explicitly generate the image.';
     } else if (isImagePromptPhase()) {
@@ -3645,7 +3637,7 @@ async function openImageRequestModal(chat, anchorMessageId = null) {
     }
 
     rawOutputActions.replaceChildren();
-    if (workflow.response && !workflow.complete && !isStale()) {
+    if (canPreviewContinuation()) {
       rawOutputActions.append(el('button', {
         class: 'btn',
         type: 'button',
@@ -3663,7 +3655,8 @@ async function openImageRequestModal(chat, anchorMessageId = null) {
     promptActions.replaceChildren(el('button', {
       class: 'btn primary',
       type: 'button',
-      disabled: running || generatingImage || !prompt.value.trim() || isStale(),
+      disabled: running || generatingImage || !prompt.value.trim() || isStale()
+        || resolutionChanged(),
       onClick: generatePicture,
     }, generatingImage ? 'Generating…' : 'Generate image'));
 
@@ -3685,20 +3678,24 @@ async function openImageRequestModal(chat, anchorMessageId = null) {
 
   async function runReasoning(continuing) {
     if (running || generatingImage) return;
+    if (continuing && resolutionChanged()) return;
     running = true;
     if (!continuing) {
       workflow = {
         context_tip_id: selectedAnchorId,
         response: '', prompt: null, complete: false,
         generated_message_id: null,
+        aspect: imageAspect,
       };
     }
     paint();
     const stream = startImagePromptStream(chat.id, {
       continue: continuing,
       anchorMessageId: selectedAnchorId,
+      aspect: imageAspect,
       onStart: (data) => {
         workflow.context_tip_id = data.context_tip_id;
+        workflow.aspect = data.aspect || imageAspect;
         if (typeof data.response_prefix === 'string') {
           workflow.response = data.response_prefix;
           response.textContent = workflow.response;
@@ -3728,7 +3725,8 @@ async function openImageRequestModal(chat, anchorMessageId = null) {
 
   async function generatePicture() {
     const finalPrompt = prompt.value.trim();
-    if (!finalPrompt || running || generatingImage || isStale()) return;
+    if (!finalPrompt || running || generatingImage || isStale()
+      || resolutionChanged()) return;
     generatingImage = true;
     paint({ preservePrompt: true });
     try {
@@ -3757,7 +3755,7 @@ async function openImageRequestModal(chat, anchorMessageId = null) {
     el('div', { class: 'image-request-label' }, 'Raw model output'),
     response,
     rawOutputActions,
-    el('div', { class: 'image-request-label' }, 'Image shape'),
+    el('div', { class: 'image-request-label' }, 'Image resolution'),
     aspectOptions,
     el('div', { class: 'image-request-label' }, 'Image prompt'),
     prompt,

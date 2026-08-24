@@ -198,10 +198,13 @@ export const api = {
   },
   rerollPicks: (id) => request('POST', `/api/chats/${id}/reroll-picks`),
   chatUsesPickMacro: (id) => request('GET', `/api/chats/${id}/uses-pick-macro`),
-  imagePromptPreview: (chatId, continuing = false, anchorMessageId = null) => {
+  imagePromptPreview: (
+    chatId, continuing = false, anchorMessageId = null, aspect = null,
+  ) => {
     const params = new URLSearchParams();
     if (continuing) params.set('continue', 'true');
     if (anchorMessageId) params.set('anchor_message_id', anchorMessageId);
+    if (aspect) params.set('aspect', aspect);
     const query = params.toString();
     return request(
       'GET',
@@ -748,6 +751,7 @@ export function startImagePromptStream(chatId, options = {}) {
   if (options.anchorMessageId) {
     params.set('anchor_message_id', options.anchorMessageId);
   }
+  if (options.aspect) params.set('aspect', options.aspect);
   const query = params.toString();
   const suffix = query ? `?${query}` : '';
   const controller = new AbortController();

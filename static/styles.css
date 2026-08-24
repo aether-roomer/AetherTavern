@@ -1286,6 +1286,19 @@ body.sidebar-collapsed .main:not(.full) > :first-child {
   letter-spacing: .04em;
   margin-bottom: 6px;
 }
+.image-setting-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.form-group .image-setting-label-row label {
+  margin-bottom: 0;
+}
+.image-setting-reset {
+  flex: 0 0 auto;
+}
 .form-group .hint {
   font-size: 0.857rem;
   color: var(--text-mute);
@@ -3371,17 +3384,6 @@ a.sender-name:hover { color: var(--text); }
 }
 .image-context-preview-note {
   margin-top: 8px;
-}
-.image-context-preview-modes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 9px;
-}
-.image-context-preview-modes .btn {
-  min-height: 28px;
-  padding: 4px 9px;
-  font-size: .786rem;
 }
 .image-context-preview-meta {
   margin: 9px 0 6px;
